@@ -1,5 +1,4 @@
 import { ArticleCategoryType } from "./articleCategory";
-import { ImageType } from "./image";
 
 export interface ArticleType {
     id: number;
@@ -8,8 +7,8 @@ export interface ArticleType {
     content: string;
     category: ArticleCategoryType;
     categoryId: string
-    banner: ImageType;
-    bannerId: string; 
+    banner: Blob;
+    readingTime: number;
   }
 
 export interface ArticleAddType

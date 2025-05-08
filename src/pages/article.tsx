@@ -8,7 +8,7 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
-import { FormSchema } from "../validation/resourceValidation";
+import { FormSchemaArticle } from "../validation/articleValidation";
 import { useUser } from "@clerk/clerk-react";
 import useUsers from "../hooks/useUsers";
 import useArticles from "../hooks/useArticles";
@@ -17,15 +17,16 @@ import useArticleCategory from "../hooks/useArticleCategory";
 
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "title", headerName: "Titre", width: 130 },
-  { field: "description", headerName: "Description", width: 130 },
+  { field: "title", headerName: "Titre", width: 400 },
+  { field: "description", headerName: "Description", width: 600 },
   {
     field: "category",
     headerName: "Categorie",
-    width: 160,
+    width: 250,
     valueGetter: (value: { name: string }) => `${value.name}`,
   },
+    { field: "readingTime", headerName: "Temps de lecture (min)", width: 200 },
+
 ];
 
 const Index = () => {
@@ -59,8 +60,9 @@ const Index = () => {
         label: cat.name,
       })),
     },
-    { name: "bannerId", label: "Bannière", type: "banner", validation: {}, showOn: "create" },
+    { name: "banner", label: "Bannière", type: "banner", validation: {}, showOn: "always" },
     { name: "content", label: "Contenu", type: "textArea", validation: {}, showOn: "always" },
+    { name: "readingTime", label: "Temps de lecture (min)", type: "number", validation: {}, showOn: "always" },
   ];
 
   const debouncedSearch = useDebounce(search, 500);
@@ -116,12 +118,14 @@ const Index = () => {
 
   const handleSubmitClick = (data: ArticleType) => {
     if (data.id) {
+     
       const { ...rest } = data;
       updateArticle(data.id.toString(), {
         ...rest,
       
       });
     } else {
+      console.log("DATA", data)
       createArticle({
         ...data,
        
@@ -146,9 +150,6 @@ const Index = () => {
   const handleBannerChange = (data: File) => {
     setBanner(banner);
   };
-
-    console.log(formData)
-
 
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
@@ -209,7 +210,7 @@ const Index = () => {
           </Box>
           <ModalEdition
             open={open}
-            FormSchema={FormSchema}
+            FormSchema={FormSchemaArticle}
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier une ressource" : "Créer une ressource"}
             fields={ressourceFormConfig}

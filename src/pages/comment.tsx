@@ -9,7 +9,7 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
-import useCitizens from "../hooks/useCitizens";
+import useCitizens from "../hooks/useUsers";
 import { useUser } from "@clerk/clerk-react";
 
 

@@ -1,21 +1,19 @@
-import useResources from "../hooks/useResources";
 import { useEffect } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import { useState } from "react";
-import { ResourceType } from "../types/resource";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
-import useCategory from "../hooks/useCategory";
-import useResourcesType from "../hooks/useResourceType";
-import { formatISOToDateInput } from "../utils/date";
 import { FormSchema } from "../validation/resourceValidation";
-import useCitizens from "../hooks/useCitizens";
 import { useUser } from "@clerk/clerk-react";
+import useUsers from "../hooks/useUsers";
+import useArticles from "../hooks/useArticles";
+import { ArticleType } from "../types/article";
+import useArticleCategory from "../hooks/useArticleCategory";
 
 
 const columns: GridColDef[] = [
@@ -23,54 +21,25 @@ const columns: GridColDef[] = [
   { field: "title", headerName: "Titre", width: 130 },
   { field: "description", headerName: "Description", width: 130 },
   {
-    field: "maxParticipant",
-    headerName: "Nombre max de participants",
-    width: 250,
-  },
-  {
-    field: "deadLine",
-    headerName: "Date limite",
-    width: 160,
-    valueGetter: (value: Date) => `${new Date(value).toLocaleDateString("fr-FR")}`,
-  },
-  {
     field: "category",
     headerName: "Categorie",
-    width: 160,
-    valueGetter: (value: { name: string }) => `${value.name}`,
-  },
-  {
-    field: "isValidate",
-    headerName: "Validé ?",
-    width: 160,
-    valueGetter: (value: boolean) => `${value ? "Oui" : "Non"}`,
-  },
-  {
-    field: "status",
-    headerName: "Statut",
-    width: 160,
-  },
-  {
-    field: "typeRessource",
-    headerName: "Type de ressource",
     width: 160,
     valueGetter: (value: { name: string }) => `${value.name}`,
   },
 ];
 
 const Index = () => {
-  const { fetchCitizenActive } = useCitizens();
+  const { fetchUserActive } = useUsers();
   const { user } = useUser();
 
 
-  const { fetchResources, resources, loading, error, createResource, updateResource, deleteResource, fetchResource, validateResource } = useResources();
-  const { fetchCategories, categories } = useCategory();
-  const { fetchResourcesType, resourcesType } = useResourcesType();
+  const { fetchArticles, articles, loading, error, createArticle, updateArticle, deleteArticle, fetchArticle } = useArticles();
+  const { fetchArticleCategories, articleCategories } = useArticleCategory();
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [count, setCount] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
-  const [resourcesFiltered, setResourcesFiltered] = useState<ResourceType[]>([]);
+  const [articlesFiltered, setArticlesFiltered] = useState<ArticleType[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -78,35 +47,20 @@ const Index = () => {
 
   const ressourceFormConfig: FieldConfig[] = [
     { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
-    { name: "description", label: "Description", type: "textArea", validation: { required: "La description est requise" }, showOn: "always" },
-    { name: "maxParticipant", label: "Max participants", type: "number", validation: { min: { value: 1, message: ">=1" } }, showOn: "always" },
-    { name: "nbParticipant", label: "Participants actuels", type: "number", validation: { min: { value: 0, message: ">=0" } }, showOn: "always" },
-    { name: "deadLine", label: "Date limite", type: "date", validation: {}, showOn: "always" },
+    { name: "description", label: "Description", type: "textArea", validation: { required: "La description est requise" }, showOn: "always" }, 
     {
       name: "categoryId",
       label: "Catégorie",
       type: "dropdown",
       validation: { required: "La catégorie est requise" },
       showOn: "always",
-      options: categories.data.map((cat) => ({
+      options: articleCategories.data.map((cat) => ({
         value: cat.id,
         label: cat.name,
       })),
     },
-    { name: "fileId", label: "Fichier", type: "file", validation: {}, showOn: "create" },
     { name: "bannerId", label: "Bannière", type: "banner", validation: {}, showOn: "create" },
-    { name: "isValidate", label: "Validé ?", type: "checkbox", validation: {}, showOn: "edit" },
-    {
-      name: "typeRessourceId",
-      label: "Type de ressource",
-      type: "dropdown",
-      validation: { required: "Le type est requis" },
-      showOn: "always",
-      options: resourcesType.data.map((type) => ({
-        value: type.id,
-        label: type.name,
-      })),
-    },
+    { name: "content", label: "Contenu", type: "textArea", validation: {}, showOn: "always" },
   ];
 
   const debouncedSearch = useDebounce(search, 500);
@@ -116,7 +70,7 @@ const Index = () => {
       const fetchUserRole = async () => {
         if (user?.id) {
           try {
-            const citizen = await fetchCitizenActive(user.id);
+            const citizen = await fetchUserActive(user.id);
             if (citizen?.role?.name === "USER") {
               console.log("Rôle détecté : USER");
               window.location.href = "/401";
@@ -131,66 +85,53 @@ const Index = () => {
     }, [user]);
 
   useEffect(() => {
-    fetchCategories();
+    fetchArticleCategories();
   }, []);
 
   useEffect(() => {
-    fetchResourcesType();
-  }, []);
-
-  useEffect(() => {
-    fetchResources({ page: page, perPage: perPage });
+    fetchArticles({ page: page, perPage: perPage });
   }, [perPage, page]);
 
-  useEffect(() => {
-    const totalCount = Math.ceil(resources.total / perPage);
-    setCount(totalCount);
-  }, [perPage, resources]);
+  useEffect(() => { const totalCount = Math.ceil (articles.total / perPage);
+    setCount(totalCount);}, [perPage, articles]);
 
   useEffect(() => {
-    const filtered = resources.data.filter((c) => `${c.title} ${c.description}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
+    const filtered = articles.data.filter((c) => `${c.title} ${c.description}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
 
-    setResourcesFiltered(filtered);
-  }, [debouncedSearch, resources]);
+    setArticlesFiltered(filtered);
+  }, [debouncedSearch, articles]);
 
   const handleRowDoubleClick = async (rowData: any) => {
-    await fetchResource(rowData.id).then((resource) => {
+    await fetchArticle(rowData.id).then((resource) => {
       setFormData({
         ...rowData,
         row: {
           ...resource,
-          deadLine: resource?.deadLine && formatISOToDateInput(resource.deadLine),
           categoryId: resource.category.id,
-          typeRessourceId: resource.typeRessource.id,
         },
       });
     });
     setOpen(true);
   };
 
-  const handleSubmitClick = (data: ResourceType) => {
+  const handleSubmitClick = (data: ArticleType) => {
     if (data.id) {
-      const { step, ...rest } = data;
-      if (data.isValidate) validateResource(data.id.toString());
-      updateResource(data.id.toString(), {
+      const { ...rest } = data;
+      updateArticle(data.id.toString(), {
         ...rest,
-        nbParticipant: rest.nbParticipant && Number(rest.nbParticipant),
-        maxParticipant: rest.maxParticipant && Number(rest.maxParticipant),
-        deadLine: rest.deadLine && new Date(rest.deadLine).toISOString(),
+      
       });
     } else {
-      createResource({
+      createArticle({
         ...data,
-        nbParticipant: Number(data.nbParticipant),
-        maxParticipant: Number(data.maxParticipant),
-        deadLine: data.deadLine ? new Date(data.deadLine).toISOString() : new Date().toISOString(),
+       
       });
     }
     handleCloseModal();
   };
 
   const handleDeleteClick = (id: string) => {
-    deleteResource(id);
+    deleteArticle(id);
     handleCloseModal();
   };
 
@@ -213,7 +154,7 @@ const Index = () => {
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <HeaderGrid title="Liste des ressources" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
           <GridComponent
-            rows={resourcesFiltered}
+            rows= {articlesFiltered}
             columns={columns}
             loading={loading}
             hideFooter={true}

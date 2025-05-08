@@ -1,6 +1,6 @@
 import { RoleType } from "./role";
 
-export interface CitizenType {
+export interface UserType {
     id: string;
     name: string;
     email: string;
@@ -10,13 +10,13 @@ export interface CitizenType {
     roleId: string
   }
 
-export interface CitizenAddType
+export interface UserAddType
  {
-  data: CitizenType,
+  data: UserType,
   message: string
  }  
-export interface CitizensType {
-    data: CitizenType[];
+export interface UsersType {
+    data: UserType[];
     message: string
     total: number;
   }

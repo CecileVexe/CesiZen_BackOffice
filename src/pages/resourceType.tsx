@@ -9,7 +9,7 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import { useDebounce } from "../hooks/useDebounce";
 import { useUser } from "@clerk/clerk-react";
-import useCitizens from "../hooks/useCitizens";
+import useCitizens from "../hooks/useUsers";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },

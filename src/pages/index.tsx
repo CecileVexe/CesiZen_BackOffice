@@ -1,10 +1,10 @@
-import useCitizens from "../hooks/useCitizens";
+import useusers from "../hooks/useUsers";
 import { useEffect, useState } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import { CitizenType } from "../types/citizen";
+import { UserType } from "../types/user";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
@@ -12,9 +12,10 @@ import { useDebounce } from "../hooks/useDebounce";
 import useRoles from "../hooks/useRoles";
 import { FormSchema } from "../validation/citizenValidation";
 import { useUser } from "@clerk/clerk-react";
+import useUsers from "../hooks/useUsers";
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 70 },
+ 
   { field: "name", headerName: "Prénom", width: 130 },
   { field: "surname", headerName: "Nom", width: 130 },
   {
@@ -39,7 +40,7 @@ const columns: GridColDef[] = [
 
 const Index = () => {
   const { user } = useUser();
-  const { fetchCitizens, citizens, loading, error, createCitizen, updateCitizen, deleteCitizen, fetchCitizenActive } = useCitizens();
+  const { fetchUsers, users, loading, error, createUser, updateUser, deleteUser, fetchUserActive } = useUsers();
   const { fetchRoles, roles } = useRoles();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -47,11 +48,11 @@ const Index = () => {
   const [count, setCount] = useState<number>(1);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [search, setSearch] = useState<string>("");
-  const [citizensFiltered, setCitiensFiltered] = useState<CitizenType[]>([]);
+  const [usersFiltered, setCitiensFiltered] = useState<UserType[]>([]);
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const createCitizenFormConfig: FieldConfig[] = [
+  const createUserFormConfig: FieldConfig[] = [
     {
       name: "name",
       label: "Nom",
@@ -104,7 +105,7 @@ const Index = () => {
     const fetchUserRole = async () => {
       if (user?.id) {
         try {
-          const citizen = await fetchCitizenActive(user.id);
+          const citizen = await fetchUserActive(user.id);
           if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
             console.log("Rôle détecté : USER");
             window.location.href = "/401";
@@ -119,7 +120,7 @@ const Index = () => {
   }, [user]);
 
   useEffect(() => {
-    fetchCitizens({ page: page, perPage: perPage });
+    fetchUsers({ page: page, perPage: perPage });
   }, [perPage, page]);
 
   useEffect(() => {
@@ -127,37 +128,39 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    const totalCount = Math.ceil(citizens.total / perPage);
+    const totalCount = Math.ceil(users.total / perPage);
     setCount(totalCount);
-  }, [perPage, citizens]);
+  }, [perPage, users]);
 
   useEffect(() => {
-    const filtered = citizens.data.filter((c) => `${c.name} ${c.surname} ${c.email}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
+    const filtered = users.data.filter((c) => `${c.name} ${c.surname} ${c.email}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
     setCitiensFiltered(filtered);
-  }, [debouncedSearch, citizens]);
+  }, [debouncedSearch, users]);
 
   const handleRowDoubleClick = (rowData: any) => {
     setFormData(rowData);
     setOpen(true);
   };
 
-  const handleSubmitClick = (data: CitizenType) => {
+  const handleSubmitClick = (data: UserType) => {
     if (data.id) {
-      updateCitizen(data.id, data);
+      updateUser(data.id, data);
     } else {
-      createCitizen(data);
+      createUser(data);
     }
     handleCloseModal();
   };
 
   const handleDeleteClick = (id: string) => {
-    deleteCitizen(id);
+    deleteUser(id);
     handleCloseModal();
   };
 
   const handleCloseModal = () => {
     setOpen(false);
   };
+
+  console.log(usersFiltered)
 
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
@@ -166,7 +169,7 @@ const Index = () => {
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <HeaderGrid title="Liste des citoyens" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
           <GridComponent
-            rows={citizensFiltered}
+            rows={usersFiltered}
             columns={columns}
             loading={loading}
             hideFooter={true}
@@ -206,7 +209,7 @@ const Index = () => {
             FormSchema={FormSchema}
             onClose={() => handleCloseModal()}
             title={formData ? "Modifier un citoyen" : "Créer un citoyen"}
-            fields={createCitizenFormConfig}
+            fields={createUserFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
             initialData={formData || undefined}
             TransitionProps={{ onExited: () => setFormData(null) }}

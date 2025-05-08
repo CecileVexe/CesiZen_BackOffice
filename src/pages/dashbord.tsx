@@ -3,8 +3,8 @@ import { Box, Grid, Card, CardContent, Typography, Button, CircularProgress } fr
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { useUser } from "@clerk/clerk-react";
 
-import useCitizens from "../hooks/useCitizens";
-import useResources from "../hooks/useResources";
+import useCitizens from "../hooks/useUsers";
+import useResources from "../hooks/useArticles";
 
 interface StatsData {
   citizensCount: number;

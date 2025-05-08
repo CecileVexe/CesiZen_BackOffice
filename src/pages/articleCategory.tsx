@@ -1,10 +1,9 @@
-import useCategories from "../hooks/useCategory";
 import { useEffect } from "react";
 import { Box } from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { useState } from "react";
-import { CategoryType } from "../types/category";
+import { ArticleCategoryType } from "../types/articleCategory";
 import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import { useDebounce } from "../hooks/useDebounce";
@@ -12,7 +11,8 @@ import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { FormSchema } from "../validation/categoryValidation";
 
 import { useUser } from "@clerk/clerk-react";
-import useCitizens from "../hooks/useCitizens";
+import useUsers from "../hooks/useUsers";
+import useArticleCategory from "../hooks/useArticleCategory";
 
 
 const columns: GridColDef[] = [
@@ -22,13 +22,13 @@ const columns: GridColDef[] = [
 ];
 
 const Index = () => {
-  const { fetchCitizens, citizens, fetchCitizenActive } = useCitizens();
+  const { fetchUserActive } = useUsers();
   const { user } = useUser();
 
 
-  const { fetchCategories, categories, loading, error, createCategory, updateCategory, deleteCategory } = useCategories();
+  const { fetchArticleCategories, articleCategories, loading, error, createArticleCategory, updateArticleCategory, deleteArticleCategory } = useArticleCategory();
   const [search, setSearch] = useState<string>("");
-  const [categoriesFiltered, setCategoriesFiltered] = useState<CategoryType[]>([]);
+  const [articleCategoriesFiltered, setCategoriesFiltered] = useState<ArticleCategoryType[]>([]);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
   const [open, setOpen] = useState<boolean>(false);
 
@@ -58,7 +58,7 @@ const Index = () => {
         const fetchUserRole = async () => {
           if (user?.id) {
             try {
-              const citizen = await fetchCitizenActive(user.id);
+              const citizen = await fetchUserActive(user.id);
               if (citizen?.role?.name === "USER") {
                 console.log("Rôle détecté : USER");
                 window.location.href = "/401";
@@ -73,31 +73,31 @@ const Index = () => {
       }, [user]);
 
   useEffect(() => {
-    fetchCategories();
+    fetchArticleCategories();
   }, []);
 
   useEffect(() => {
-    const filtered = categories.data.filter((c) => `${c.name}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
+    const filtered = articleCategories.data.filter((c) => `${c.name}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
     setCategoriesFiltered(filtered);
-  }, [debouncedSearch, categories]);
+  }, [debouncedSearch, articleCategories]);
 
   const handleRowDoubleClick = (rowData: any) => {
     setFormData(rowData);
     setOpen(true);
   };
 
-  const handleSubmitClick = (data: CategoryType) => {
+  const handleSubmitClick = (data: ArticleCategoryType) => {
     console.log("Data submitted:", data);
     if (data.id) {
-      updateCategory(data.id, data);
+      updateArticleCategory(data.id, data);
     } else {
-      createCategory(data);
+      createArticleCategory(data);
     }
     handleCloseModal();
   };
 
   const handleDeleteClick = (id: string) => {
-    deleteCategory(id);
+    deleteArticleCategory(id);
     handleCloseModal();
   };
 
@@ -112,7 +112,7 @@ const Index = () => {
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <HeaderGrid title="Liste des catégories" searchValue={search} onAddClick={() => setOpen(true)} onSearchChange={setSearch} />
           <GridComponent
-            rows={categoriesFiltered}
+            rows={articleCategoriesFiltered}
             columns={columns}
             loading={loading}
             hideFooter={true}

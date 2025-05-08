@@ -1,5 +1,5 @@
 import { ProgressionType } from "./progression";
-import { ResourceType } from "./resource";
+import { ResourceType } from "./article";
 
 export interface StepType {
     id: string;

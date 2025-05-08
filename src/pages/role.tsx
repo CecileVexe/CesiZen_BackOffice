@@ -9,17 +9,17 @@ import ErrorComponent from "../components/Error";
 import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
-import useCitizens from "../hooks/useCitizens";
+import useCitizens from "../hooks/useUsers";
 import { useUser } from "@clerk/clerk-react";
+import useUsers from "../hooks/useUsers";
 
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Nom", width: 130 },
 ];
 
 const Role = () => {
-  const { citizens, fetchCitizenActive } = useCitizens();
+  const { users, fetchUserActive } = useUsers();
   const { user } = useUser();
 
   const { fetchRoles, roles, loading, error, createRole, updateRole, deleteRole } = useRoles();
@@ -45,7 +45,7 @@ const Role = () => {
       const fetchUserRole = async () => {
         if (user?.id) {
           try {
-            const citizen = await fetchCitizenActive(user.id);
+            const citizen = await fetchUserActive(user.id);
             if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
               console.log("Rôle détecté : USER");
               window.location.href = "/401";

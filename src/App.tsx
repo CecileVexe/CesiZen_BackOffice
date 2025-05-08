@@ -15,9 +15,9 @@ import { Route, Routes } from "react-router-dom";
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
 import Role from "./pages/role";
-import Resource from "./pages/resource";
+import Article from "./pages/article";
 import Login from "./pages/login";
-import Category from "./pages/category";
+import ArticleCategory from "./pages/articleCategory";
 import StatsPage from "./pages/dashbord";
 import ResourceType from "./pages/resourceType";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
@@ -34,20 +34,20 @@ function App() {
   return (
     <div className="app" style={{ height: `calc(100vh - ${headerHeight}px)` }}>
       <Routes>
-        <Route path="/citizens" element={<Index />} />
-        <Route path="/resources" element={<Resource />} />
+        <Route path="/users" element={<Index />} />
+        <Route path="/articles" element={<Article />} />
         <Route path="/roles" element={<Role />} />
         <Route path="*" element={<Erreur404 />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<StatsPage />} />
-        <Route path="/categories" element={<Category />} />
+        <Route path="/article-categories" element={<ArticleCategory />} />
         <Route path="/resource-types" element={<ResourceType />} />
         <Route
           path="/"
           element={
             <>
               <SignedIn>
-                <Resource />
+                <Article />
               </SignedIn>
               <SignedOut>
                 <RedirectToSignIn />

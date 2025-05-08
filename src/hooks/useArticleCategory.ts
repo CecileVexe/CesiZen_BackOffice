@@ -1,20 +1,19 @@
-// src/hooks/useCategory.ts
 import { useState } from 'react';
-import { CategoriesType, CategoryAddType, CategoryType } from '../types/category';
+import { ArticleCategoriesType, ArticleCategoryAddType, ArticleCategoryType } from '../types/articleCategory';
 
 interface UseCategoriesReturn {
-  categories: CategoriesType;
+  articleCategories: ArticleCategoriesType;
   loading: boolean;
   error: Error | null;
-  fetchCategories: () => Promise<void>;
-  createCategory: (newCategory: Omit<CategoryType, 'id'>) => Promise<void>;
-  updateCategory: (id: string, updatedFields: Partial<CategoryType>) => Promise<void>;
-  deleteCategory: (id: string) => Promise<void>;
+  fetchArticleCategories: () => Promise<void>;
+  createArticleCategory: (newCategory: Omit<ArticleCategoryType, 'id'>) => Promise<void>;
+  updateArticleCategory: (id: string, updatedFields: Partial<ArticleCategoryType>) => Promise<void>;
+  deleteArticleCategory: (id: string) => Promise<void>;
 }
 
-const useCategory = (): UseCategoriesReturn => {
+const useArticleCategory = (): UseCategoriesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [categories, setCategories] = useState<CategoriesType>({
+  const [articleCategories, setCategories] = useState<ArticleCategoriesType>({
     data: [],
     message: '',
     total: 0,
@@ -23,15 +22,15 @@ const useCategory = (): UseCategoriesReturn => {
   const [error, setError] = useState<Error | null>(null);
 
   // Récupérer la liste des catégories
-  const fetchCategories = async () => {
+  const fetchArticleCategories = async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch(
-        `${baseUrl}/category`
+        `${baseUrl}/article-category`
       );
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
-      const data: CategoriesType = await res.json();
+      const data: ArticleCategoriesType = await res.json();
       setCategories(data);
     } catch (err: any) {
       setError(err);
@@ -41,16 +40,16 @@ const useCategory = (): UseCategoriesReturn => {
   };
 
   // Créer une nouvelle catégorie
-  const createCategory = async (newCategory: Omit<CategoryType, 'id'>) => {
+  const createArticleCategory = async (newCategory: Omit<ArticleCategoryType, 'id'>) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/category`, {
+      const res = await fetch(`${baseUrl}/article-category`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newCategory),
       });
       if (!res.ok) throw new Error(`Erreur lors de la création : ${res.status}`);
-      const createdCategory: CategoryAddType = await res.json();
+      const createdCategory: ArticleCategoryAddType = await res.json();
       setCategories((prev) => ({
         data: [...prev.data, createdCategory.data],
         message: createdCategory.message,
@@ -62,16 +61,16 @@ const useCategory = (): UseCategoriesReturn => {
   };
 
   // Mettre à jour une catégorie
-  const updateCategory = async (id: string, updatedFields: Partial<CategoryType>) => {
+  const updateArticleCategory = async (id: string, updatedFields: Partial<ArticleCategoryType>) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/category/${id}`, {
+      const res = await fetch(`${baseUrl}/article-category/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields),
       });
       if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
-      const updatedCategory: CategoryAddType = await res.json();
+      const updatedCategory: ArticleCategoryAddType = await res.json();
       setCategories((prev) => ({
         data: prev.data.map((category) => (category.id === id ? updatedCategory.data : category)),
         message: updatedCategory.message,
@@ -83,14 +82,14 @@ const useCategory = (): UseCategoriesReturn => {
   };
 
   // Supprimer une catégorie
-  const deleteCategory = async (id: string) => {
+  const deleteArticleCategory = async (id: string) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/category/${id}`, {
+      const res = await fetch(`${baseUrl}/article-category/${id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
-      const messageDeletedCategory: Omit<CategoryAddType, 'data'> = await res.json();
+      const messageDeletedCategory: Omit<ArticleCategoryAddType, 'data'> = await res.json();
       setCategories((prev) => ({
         data: prev.data.filter((category) => category.id !== id),
         message: messageDeletedCategory.message,
@@ -102,14 +101,14 @@ const useCategory = (): UseCategoriesReturn => {
   };
 
   return {
-    categories,
+    articleCategories,
     loading,
     error,
-    fetchCategories,
-    createCategory,
-    updateCategory,
-    deleteCategory,
+    fetchArticleCategories,
+    createArticleCategory,
+    updateArticleCategory,
+    deleteArticleCategory,
   };
 };
 
-export default useCategory;
+export default useArticleCategory;

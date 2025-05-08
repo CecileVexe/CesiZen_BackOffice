@@ -1,5 +1,5 @@
 import { CitizenType } from "./citizen";
-import { ResourceType } from "./resource";
+import { ResourceType } from "./article";
 
 export interface FavoriteType {
     id: string;

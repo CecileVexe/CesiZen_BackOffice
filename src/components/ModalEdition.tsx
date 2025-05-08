@@ -42,19 +42,14 @@ export interface FieldConfig {
   name:
     | "title"
     | "description"
-    | "maxParticipant"
-    | "nbParticipant"
-    | "deadLine"
+    | "content"
     | "categoryId"
-    | "isValidate"
-    | "typeRessourceId"
     | "name"
     | "email"
     | "password"
     | "roleId"
     | "surname"
     | "bannerId"
-    | "fileId";
   label: string;
   type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea";
   defaultValue?: string | number;

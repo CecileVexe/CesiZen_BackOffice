@@ -17,7 +17,7 @@ const Navigation = () => {
         </IconButton>
       </NavLink>
       <NavLink to="/users" className={({ isActive }) => (isActive ? "selected" : "")}>
-        <IconButton size="large" aria-label="Voir les citoyens">
+        <IconButton size="large" aria-label="Voir les utilisateurs">
           <GroupIcon />
         </IconButton>
       </NavLink>
@@ -27,22 +27,22 @@ const Navigation = () => {
         </IconButton>
       </NavLink>
       <NavLink to="/articles" className={({ isActive }) => (isActive ? "selected" : "")}>
-        <IconButton size="large" aria-label="Voir les ressources">
+        <IconButton size="large" aria-label="Voir les articles">
           <CategoryIcon />
         </IconButton>
       </NavLink>
       <NavLink to="/article-categories" className={({ isActive }) => (isActive ? "selected" : "")}>
-        <IconButton size="large" aria-label="Voir les catégories">
+        <IconButton size="large" aria-label="Voir les catégories d'articles">
           <FolderIcon />
         </IconButton>
       </NavLink>
-      <NavLink to="/resource-types" className={({ isActive }) => (isActive ? "selected" : "")}>
-        <IconButton size="large" aria-label="Voir les types de ressources">
+      <NavLink to="/emotion-categories" className={({ isActive }) => (isActive ? "selected" : "")}>
+        <IconButton size="large" aria-label="Voir les catégories d'émotions">
           <BookmarkIcon />
         </IconButton>
       </NavLink>
-      <NavLink to="/comments" className={({ isActive }) => (isActive ? "selected" : "")}>
-        <IconButton size="large" aria-label="Voir les commentaire">
+      <NavLink to="/emotions" className={({ isActive }) => (isActive ? "selected" : "")}>
+        <IconButton size="large" aria-label="Voir les émotions">
           <ModeCommentIcon />
         </IconButton>
       </NavLink>

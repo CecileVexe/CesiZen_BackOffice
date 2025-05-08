@@ -160,8 +160,6 @@ const Index = () => {
     setOpen(false);
   };
 
-  console.log(usersFiltered)
-
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
       {error && <ErrorComponent errorMessage={error?.message} />}

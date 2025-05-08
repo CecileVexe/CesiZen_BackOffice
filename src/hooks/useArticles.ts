@@ -15,11 +15,11 @@ interface UseResourcesReturn {
 
 const useArticles = (): UseResourcesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [articles, setResources] = useState<ArticlesType>({
+  const [articles, setArticles] = useState<ArticlesType>({
     data: [],
   message: '',
     total: 0});
-    const [article, setResource] = useState<ArticleType | null>(null);
+    const [article, setArticle] = useState<ArticleType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -31,7 +31,7 @@ const useArticles = (): UseResourcesReturn => {
       const res = await fetch(`${page && perPage ? baseUrl + "/article" + `?page=${page}&perPage=${perPage}` : baseUrl + "/article"}`);      
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
       const data: ArticlesType = await res.json();
-      setResources(data);
+      setArticles(data);
     } catch (err: any) {      
       setError(err);
     } finally {
@@ -46,7 +46,7 @@ const useArticles = (): UseResourcesReturn => {
       const res = await fetch(`${baseUrl}/article/${id}`);
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
       const data: ArticleAddType = await res.json();
-      setResource(data.data);
+      setArticle(data.data);
       return data.data;
     } catch (err: any) {
       setError(err);
@@ -67,7 +67,7 @@ const useArticles = (): UseResourcesReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la création : ${res.status}`);
       const createdResource: ArticleAddType = await res.json();
-      setResources((prev) => ({data: [...prev.data, createdResource.data], message: createdResource.message, total: prev.total + 1}));
+      setArticles((prev) => ({data: [...prev.data, createdResource.data], message: createdResource.message, total: prev.total + 1}));
       return createdResource.data;
     } catch (err: any) {
       setError(err);
@@ -86,7 +86,7 @@ const useArticles = (): UseResourcesReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
       const updatedResource: ArticleAddType = await res.json();
-      setResources((prev) => ({data: prev.data.map((article) => (article.id.toString() === id ? updatedResource.data : article)), message: updatedResource.message, total: prev.total}));
+      setArticles((prev) => ({data: prev.data.map((article) => (article.id.toString() === id ? updatedResource.data : article)), message: updatedResource.message, total: prev.total}));
       return updatedResource.data;
     } catch (err: any) {
       setError(err);
@@ -103,7 +103,7 @@ const useArticles = (): UseResourcesReturn => {
       });
       if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
       const messageDeletedResource : Omit<ArticleAddType, 'data'> = await res.json();
-      setResources((prev) => ({data: prev.data.filter((article) => article.id.toString() !== id), message: messageDeletedResource.message, total: prev.total - 1}));
+      setArticles((prev) => ({data: prev.data.filter((article) => article.id.toString() !== id), message: messageDeletedResource.message, total: prev.total - 1}));
     } catch (err: any) {
       setError(err);
     }

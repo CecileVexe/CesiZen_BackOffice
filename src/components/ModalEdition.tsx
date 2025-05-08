@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import {
@@ -22,6 +22,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { StepType } from "../types/step";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { HexColorPicker } from "react-colorful";
+
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -50,12 +52,14 @@ export interface FieldConfig {
     | "roleId"
     | "surname"
     | "bannerId"
+    | "color"
+    | "smiley"
   label: string;
-  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea";
+  type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea" | "color";
   defaultValue?: string | number;
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
-  options?: Array<{ value: string | number; label: string }> | null;
+  options?: Array<{ value: string | number; label: string | JSX.Element }> | null;
   isDisabled?: boolean;
   dataFormat?: (value: any) => string;
 }
@@ -196,7 +200,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
                   const rawValue = ctrl.value;
                   const displayValue = field.dataFormat && rawValue != null ? field.dataFormat(rawValue) : rawValue;
                   return (
-                    <Box sx={{ display: "flex", alignItems: "center", width: "100%", mt: 2 }}>
+                    <Box sx={{ display: "flex", flexDirection:"column", alignItems: "center", width: "100%", mt: 2 }}>
                       {field.type !== "file" && field.type !== "banner" && field.type !== "checkbox" && (
                         <TextField
                           {...ctrl}
@@ -232,6 +236,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
                             ))}
                         </TextField>
                       )}
+                      
                       {(field.type === "file" || field.type === "banner") && (
                         <>
                           <Button component="label" role={undefined} variant="contained" tabIndex={-1} startIcon={<CloudUploadIcon />}>
@@ -265,19 +270,15 @@ const GenericModal: React.FC<GenericModalProps> = ({
                         )} */}
                         </>
                       )}
-                      {field.name === "isValidate" && (
-                        <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-                          <Typography>{field.label}</Typography>
-                          <input type="checkbox" {...register("isValidate")} style={{ marginLeft: "8px" }} />
-                        </Box>
-                      )}
+                      
+                      
                     </Box>
                   );
                 }}
               />
             );
           })}
-          {interfaceActive === "resource" && (
+          {/* {interfaceActive === "resource" && (
             <>
               <Divider sx={{ margin: "1rem 0" }} />
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -285,8 +286,8 @@ const GenericModal: React.FC<GenericModalProps> = ({
                 <Button onClick={handleAddStep}>Ajouter +</Button>
               </Box>
             </>
-          )}
-          {steps &&
+          )} */}
+          {/* {steps &&
             steps.map((step: any, index: number) => (
               <React.Fragment key={`step-${index}`}>
                 <Box
@@ -359,7 +360,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
                   />
                 </Box>
               </React.Fragment>
-            ))}
+            ))} */}
         </form>
       </DialogContent>
       <DialogActions sx={{ justifyContent: initialData?.id ? "space-between" : "flex-end" }}>

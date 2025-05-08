@@ -19,7 +19,7 @@ import Article from "./pages/article";
 import Login from "./pages/login";
 import ArticleCategory from "./pages/articleCategory";
 import StatsPage from "./pages/dashbord";
-import ResourceType from "./pages/resourceType";
+import EmotionCategory from "./pages/emotionCategory";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import Erreur401 from "./pages/Error401";
 import Comment from "./pages/comment";
@@ -41,7 +41,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<StatsPage />} />
         <Route path="/article-categories" element={<ArticleCategory />} />
-        <Route path="/resource-types" element={<ResourceType />} />
+        <Route path="/emotion-categories" element={<EmotionCategory />} />
         <Route
           path="/"
           element={

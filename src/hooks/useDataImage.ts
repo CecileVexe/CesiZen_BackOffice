@@ -2,7 +2,7 @@ import { useState } from "react";
 
 interface UseImagesReturn {
   image: File | null;
-  imageUrl: string | null
+  imageUrl: string | null;
   loading: boolean;
   error: Error | null;
   fetchImage: (id: string) => Promise<File>;
@@ -15,8 +15,6 @@ const useImages = (): UseImagesReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
- 
-
   const fetchImage = async (id: string): Promise<File> => {
     setLoading(true);
     setError(null);
@@ -25,7 +23,7 @@ const useImages = (): UseImagesReturn => {
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
       const data: File = await res.json();
       setImage(data);
-      setImageUrl(`${baseUrl}/image/${id}`)
+      setImageUrl(`${baseUrl}/image/${id}`);
       return data;
     } catch (err: any) {
       setError(err);
@@ -34,7 +32,6 @@ const useImages = (): UseImagesReturn => {
       setLoading(false);
     }
   };
-
 
   return {
     image,

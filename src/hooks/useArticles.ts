@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArticleAddType, ArticlesType, ArticleType } from "../types/article";
 
-interface UseResourcesReturn {
+interface UseArticlesReturn {
   articles: ArticlesType;
   article: ArticleType | null;
   loading: boolean;
@@ -14,7 +14,7 @@ interface UseResourcesReturn {
     perPage?: number;
   }) => Promise<void>;
   fetchArticle: (id: string) => Promise<ArticleType>;
-  createArticle: (newResource: Omit<ArticleType, "id">) => Promise<ArticleType>;
+  createArticle: (newArticle: Omit<ArticleType, "id">) => Promise<ArticleType>;
   updateArticle: (
     id: string,
     updatedFields: Partial<ArticleType>
@@ -22,7 +22,7 @@ interface UseResourcesReturn {
   deleteArticle: (id: string) => Promise<void>;
 }
 
-const useArticles = (): UseResourcesReturn => {
+const useArticles = (): UseArticlesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [articles, setArticles] = useState<ArticlesType>({
     data: [],
@@ -98,19 +98,19 @@ const useArticles = (): UseResourcesReturn => {
       }
 
       const res = await fetch(`${baseUrl}/article`, {
-      method: 'POST',
-      body: formData,
-    });
+        method: "POST",
+        body: formData,
+      });
 
       if (!res.ok)
         throw new Error(`Erreur lors de la création : ${res.status}`);
-      const createdResource: ArticleAddType = await res.json();
+      const createdArticle: ArticleAddType = await res.json();
       setArticles((prev) => ({
-        data: [...prev.data, createdResource.data],
-        message: createdResource.message,
+        data: [...prev.data, createdArticle.data],
+        message: createdArticle.message,
         total: prev.total + 1,
       }));
-      return createdResource.data;
+      return createdArticle.data;
     } catch (err: any) {
       setError(err);
       throw err;
@@ -124,35 +124,34 @@ const useArticles = (): UseResourcesReturn => {
   ): Promise<ArticleType> => {
     setError(null);
     try {
-      
-        const formData = new FormData();
+      const formData = new FormData();
 
-    for (const [key, value] of Object.entries(updatedFields)) {
-      if (value instanceof File) {
-        formData.append(key, value); // image
-      } else if (typeof value === 'number') {
-        formData.append(key, value.toString()); // number
-      } else if (typeof value === 'string') {
-        formData.append(key, value); // text
+      for (const [key, value] of Object.entries(updatedFields)) {
+        if (value instanceof File) {
+          formData.append(key, value); // image
+        } else if (typeof value === "number") {
+          formData.append(key, value.toString()); // number
+        } else if (typeof value === "string") {
+          formData.append(key, value); // text
+        }
       }
-    }
 
-    const res = await fetch(`${baseUrl}/article/${id}`, {
-      method: "PATCH",
-      body: formData, 
-    });
+      const res = await fetch(`${baseUrl}/article/${id}`, {
+        method: "PATCH",
+        body: formData,
+      });
 
       if (!res.ok)
         throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
-      const updatedResource: ArticleAddType = await res.json();
+      const updatedArticle: ArticleAddType = await res.json();
       setArticles((prev) => ({
         data: prev.data.map((article) =>
-          article.id.toString() === id ? updatedResource.data : article
+          article.id.toString() === id ? updatedArticle.data : article
         ),
-        message: updatedResource.message,
+        message: updatedArticle.message,
         total: prev.total,
       }));
-      return updatedResource.data;
+      return updatedArticle.data;
     } catch (err: any) {
       setError(err);
       throw err;
@@ -168,11 +167,11 @@ const useArticles = (): UseResourcesReturn => {
       });
       if (!res.ok)
         throw new Error(`Erreur lors de la suppression : ${res.status}`);
-      const messageDeletedResource: Omit<ArticleAddType, "data"> =
+      const messageDeletedArticle: Omit<ArticleAddType, "data"> =
         await res.json();
       setArticles((prev) => ({
         data: prev.data.filter((article) => article.id.toString() !== id),
-        message: messageDeletedResource.message,
+        message: messageDeletedArticle.message,
         total: prev.total - 1,
       }));
     } catch (err: any) {

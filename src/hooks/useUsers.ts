@@ -1,13 +1,19 @@
 // src/hooks/useUsers.ts
-import { useState } from 'react';
-import { UserType, UserAddType, UsersType } from '../types/user';
+import { useState } from "react";
+import { UserType, UserAddType, UsersType } from "../types/user";
 
 interface UseUsersReturn {
   users: UsersType;
   loading: boolean;
   error: Error | null;
-  fetchUsers: ({ page, perPage }: { page?: number, perPage?: number }) => Promise<void>;
-  createUser: (newUser: Omit<UserType, 'id'>) => Promise<void>;
+  fetchUsers: ({
+    page,
+    perPage,
+  }: {
+    page?: number;
+    perPage?: number;
+  }) => Promise<void>;
+  createUser: (newUser: Omit<UserType, "id">) => Promise<void>;
   updateUser: (id: string, updatedFields: Partial<UserType>) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
   fetchUserActive: (userId: string) => Promise<UserType | null>;
@@ -17,17 +23,29 @@ const useUsers = (): UseUsersReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [users, setUsers] = useState<UsersType>({
     data: [],
-    message: '',
-    total: 0
+    message: "",
+    total: 0,
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchUsers = async ({ page, perPage }: { page?: number, perPage?: number }) => {
+  const fetchUsers = async ({
+    page,
+    perPage,
+  }: {
+    page?: number;
+    perPage?: number;
+  }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${page && perPage ? baseUrl + "/user" + `?page=${page}&perPage=${perPage}` : baseUrl + "/user"}`);
+      const res = await fetch(
+        `${
+          page && perPage
+            ? baseUrl + "/user" + `?page=${page}&perPage=${perPage}`
+            : baseUrl + "/user"
+        }`
+      );
       if (!res.ok) throw new Error(`Erreur lors du chargement : ${res.status}`);
       const data: UsersType = await res.json();
       setUsers(data);
@@ -38,20 +56,21 @@ const useUsers = (): UseUsersReturn => {
     }
   };
 
-  const createUser = async (newUser: Omit<UserType, 'id'>) => {
+  const createUser = async (newUser: Omit<UserType, "id">) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/user`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newUser)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
       });
-      if (!res.ok) throw new Error(`Erreur lors de la création : ${res.status}`);
+      if (!res.ok)
+        throw new Error(`Erreur lors de la création : ${res.status}`);
       const createdUser: UserAddType = await res.json();
       setUsers((prev) => ({
         data: [...prev.data, createdUser.data],
         message: createdUser.message,
-        total: prev.total + 1
+        total: prev.total + 1,
       }));
     } catch (err: any) {
       setError(err);
@@ -63,16 +82,19 @@ const useUsers = (): UseUsersReturn => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/user/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedFields)
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedFields),
       });
-      if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
+      if (!res.ok)
+        throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
       const updatedUser: UserAddType = await res.json();
       setUsers((prev) => ({
-        data: prev.data.map((user) => (user.id === id ? updatedUser.data : user)),
+        data: prev.data.map((user) =>
+          user.id === id ? updatedUser.data : user
+        ),
         message: updatedUser.message,
-        total: prev.total
+        total: prev.total,
       }));
     } catch (err: any) {
       setError(err);
@@ -83,14 +105,15 @@ const useUsers = (): UseUsersReturn => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/user/${id}`, {
-        method: 'DELETE'
+        method: "DELETE",
       });
-      if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
-      const messageDeletedUser: Omit<UserAddType, 'data'> = await res.json();
+      if (!res.ok)
+        throw new Error(`Erreur lors de la suppression : ${res.status}`);
+      const messageDeletedUser: Omit<UserAddType, "data"> = await res.json();
       setUsers((prev) => ({
         data: prev.data.filter((user) => user.id !== id),
         message: messageDeletedUser.message,
-        total: prev.total - 1
+        total: prev.total - 1,
       }));
     } catch (err: any) {
       setError(err);
@@ -103,7 +126,10 @@ const useUsers = (): UseUsersReturn => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/user/clerk/${userId}`);
-      if (!res.ok) throw new Error(`Erreur lors du chargement de l'utilisateur actif : ${res.status}`);
+      if (!res.ok)
+        throw new Error(
+          `Erreur lors du chargement de l'utilisateur actif : ${res.status}`
+        );
       const data: UserAddType = await res.json();
       return data.data;
     } catch (err: any) {
@@ -122,7 +148,7 @@ const useUsers = (): UseUsersReturn => {
     createUser,
     updateUser,
     deleteUser,
-    fetchUserActive
+    fetchUserActive,
   };
 };
 

@@ -6,8 +6,13 @@ interface UseEmotionsReturn {
   loading: boolean;
   error: Error | null;
   fetchEmotions: () => Promise<void>;
-  createEmotion: (newEmotion: Omit<EmotionType, "id" | "createdAt" | "updatedAt">) => Promise<void>;
-  updateEmotion: (id: string,  updatedFields: Partial<EmotionType>) => Promise<void>;
+  createEmotion: (
+    newEmotion: Omit<EmotionType, "id" | "createdAt" | "updatedAt">
+  ) => Promise<void>;
+  updateEmotion: (
+    id: string,
+    updatedFields: Partial<EmotionType>
+  ) => Promise<void>;
   deleteEmotion: (id: string) => Promise<void>;
 }
 
@@ -49,10 +54,10 @@ const useEmotions = (): UseEmotionsReturn => {
       });
       if (!res.ok)
         throw new Error(`Erreur lors de la création : ${res.status}`);
-      const createdResourceType: EmotionAddType = await res.json();
+      const createdEmotion: EmotionAddType = await res.json();
       setEmotions((prev) => ({
-        data: [...prev.data, createdResourceType.data],
-        message: createdResourceType.message,
+        data: [...prev.data, createdEmotion.data],
+        message: createdEmotion.message,
         total: prev.total + 1,
       }));
     } catch (err: any) {
@@ -60,26 +65,23 @@ const useEmotions = (): UseEmotionsReturn => {
     }
   };
 
-  // Mettre à jour une resourceType
   const updateEmotion = async (
     id: string,
     updatedFields: Partial<EmotionType>
   ) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/emotion-category/${id}`, {
+      const res = await fetch(`${baseUrl}/emotion/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedFields),
       });
       if (!res.ok)
         throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
-      const updatedResourceType: EmotionAddType = await res.json();
+      const updatedEmotion: EmotionAddType = await res.json();
       setEmotions((prev) => ({
-        data: prev.data.map((r) =>
-          r.id === id ? updatedResourceType.data : r
-        ),
-        message: updatedResourceType.message,
+        data: prev.data.map((r) => (r.id === id ? updatedEmotion.data : r)),
+        message: updatedEmotion.message,
         total: prev.total,
       }));
     } catch (err: any) {
@@ -101,7 +103,7 @@ const useEmotions = (): UseEmotionsReturn => {
       setEmotions((prev) => ({
         data: prev.data.filter((emotion) => emotion.id !== id),
         message: messageDeletedEmotion.message,
-         total: prev.total - 1,
+        total: prev.total - 1,
       }));
     } catch (err: any) {
       setError(err);

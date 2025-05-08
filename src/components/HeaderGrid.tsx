@@ -1,5 +1,4 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import React from "react";
 
 interface HeaderGridProps {
   title: string;
@@ -8,9 +7,23 @@ interface HeaderGridProps {
   onSearchChange: (value: string) => void;
 }
 
-function HeaderGrid({ title, onAddClick, searchValue, onSearchChange }: HeaderGridProps) {
+function HeaderGrid({
+  title,
+  onAddClick,
+  searchValue,
+  onSearchChange,
+}: HeaderGridProps) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", margin: "20px 0", width: "100%", justifyContent: "space-between", gap: 2 }}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        margin: "20px 0",
+        width: "100%",
+        justifyContent: "space-between",
+        gap: 2,
+      }}
+    >
       <Typography variant="h1" sx={{ paddingBottom: "10px" }}>
         {title}
       </Typography>

@@ -1,7 +1,7 @@
-import { ResourceType } from "./article";
+import { ArticleType } from "./article";
 
 export interface ImageType {
-    id: string;
-    url: Blob;
-    ressources: ResourceType[];
+  id: string;
+  url: Blob;
+  article: ArticleType[];
 }

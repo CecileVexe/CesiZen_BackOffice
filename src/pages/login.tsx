@@ -23,7 +23,7 @@ const Login = () => {
       });
 
       await setActive({ session: result.createdSessionId });
-      navigate("/resources");
+      navigate("/articles");
     } catch (err: any) {
       setError(err.errors?.[0]?.message || "Erreur d'authentification");
     }
@@ -53,15 +53,40 @@ const Login = () => {
         <Typography variant="h5" align="center" sx={{ marginBottom: 2 }}>
           Connexion
         </Typography>
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <TextField label="Email" type="email" variant="outlined" value={email} onChange={(e) => setEmail(e.target.value)} required fullWidth />
-          <TextField label="Mot de passe" type="password" variant="outlined" value={mdp} onChange={(e) => setMdp(e.target.value)} required fullWidth />
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", gap: 16 }}
+        >
+          <TextField
+            label="Email"
+            type="email"
+            variant="outlined"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            fullWidth
+          />
+          <TextField
+            label="Mot de passe"
+            type="password"
+            variant="outlined"
+            value={mdp}
+            onChange={(e) => setMdp(e.target.value)}
+            required
+            fullWidth
+          />
           {error && (
             <Typography color="error" fontSize="0.9rem">
               {error}
             </Typography>
           )}
-          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: 2, color: "white" }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: 2, color: "white" }}
+          >
             Se connecter
           </Button>
         </form>

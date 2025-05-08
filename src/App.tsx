@@ -11,14 +11,13 @@ import "@fontsource/fredoka/400.css";
 import "@fontsource/fredoka/500.css";
 import "@fontsource/fredoka/600.css";
 import "@fontsource/fredoka/700.css";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Index from "./pages";
 import Erreur404 from "./pages/erreur404";
 import Role from "./pages/role";
 import Article from "./pages/article";
 import Login from "./pages/login";
 import ArticleCategory from "./pages/articleCategory";
-import StatsPage from "./pages/dashbord";
 import EmotionCategory from "./pages/emotionCategory";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import Erreur401 from "./pages/Error401";
@@ -37,9 +36,7 @@ function App() {
         <Route path="/users" element={<Index />} />
         <Route path="/articles" element={<Article />} />
         <Route path="/roles" element={<Role />} />
-        <Route path="*" element={<Erreur404 />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<StatsPage />} />
         <Route path="/article-categories" element={<ArticleCategory />} />
         <Route path="/emotion-categories" element={<EmotionCategory />} />
         <Route path="/emotions" element={<Emotion />} />
@@ -48,7 +45,7 @@ function App() {
           element={
             <>
               <SignedIn>
-                <Article />
+                <Navigate to="/articles" />
               </SignedIn>
               <SignedOut>
                 <RedirectToSignIn />

@@ -5,15 +5,13 @@ const theme = createTheme(
   {
     palette: {
       mode: "light",
-      primary: { main: "#00949F" },
-      secondary: { main: "#7C93F9" },
+      primary: { main: "#52B788" },
+      secondary: { main: "#006c53" },
       text: { primary: "#1A1A1A", secondary: "#4B5563" },
     },
     typography: {
-      // Police par défaut
       fontFamily: "Roboto, Inter, sans-serif",
 
-      // Tu peux aussi isoler les titres si tu veux
       h1: {
         fontFamily: "Fredoka, sans-serif",
         fontWeight: 500,
@@ -29,7 +27,6 @@ const theme = createTheme(
         fontWeight: 500,
         fontSize: "1.75rem",
       },
-      // etc. pour h4,h5,h6…
       body1: {
         fontSize: "1rem",
       },
@@ -53,7 +50,7 @@ const theme = createTheme(
             color: "#ffffff",
             "&:hover": {
               backgroundColor: "#fff",
-              color: "#00949F",
+              color: "#52B788",
             },
           },
         },

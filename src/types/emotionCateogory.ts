@@ -1,5 +1,5 @@
 export interface EmotionCategory {
-  id: number;
+  id: string;
   name: string;
   color: string;
   smiley: string;
@@ -7,14 +7,13 @@ export interface EmotionCategory {
   updatedAt: Date;
 }
 
-export interface EmotionCategoryAddType
- {
-  data: EmotionCategory,
-  message: string
- }  
+export interface EmotionCategoryAddType {
+  data: EmotionCategory;
+  message: string;
+}
 
 export interface EmotionCategoryApi {
-    data: EmotionCategory[];
-    message: string
-    total: number;
-  }
+  data: EmotionCategory[];
+  message: string;
+  total: number;
+}

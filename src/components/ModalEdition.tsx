@@ -11,22 +11,15 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  Select,
   MenuItem,
-  InputLabel,
-  Typography,
-  Divider,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { StepType } from "../types/step";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { HexColorPicker } from "react-colorful";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import useImages from "../hooks/useDataImage";
+import { GridRowParams } from "@mui/x-data-grid";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -72,7 +65,7 @@ export interface FieldConfig {
     | "textArea"
     | "color";
   defaultValue?: string | number;
-  validation?: Record<string, any>;
+  validation?: Record<string, string | object>;
   showOn: "create" | "edit" | "always";
   options?: Array<{
     value: string | number;
@@ -80,7 +73,7 @@ export interface FieldConfig {
     color?: string;
   }> | null;
   isDisabled?: boolean;
-  dataFormat?: (value: any) => string;
+  dataFormat?: (value: unknown) => string;
 }
 
 interface GenericModalProps {
@@ -88,15 +81,18 @@ interface GenericModalProps {
   onClose: () => void;
   title: string;
   fields: FieldConfig[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit?: (data: any) => void;
   onDelete?: (id: string) => void;
-  initialData?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initialData?: GridRowParams<any> | null;
   TransitionProps?: {
     onExited: () => void;
   };
   onSubmitFile?: (file: File) => void;
   onSubmitBanner?: (file: File) => void;
   interfaceActive?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   FormSchema: z.ZodType<any, any>;
 }
 
@@ -112,7 +108,6 @@ const GenericModal: React.FC<GenericModalProps> = ({
   onSubmitFile,
   onSubmitBanner,
   FormSchema,
-  interfaceActive,
 }) => {
   const isEdit = Boolean(initialData);
   const [existingBannerUrl, setExistingBannerUrl] = useState<string | null>(
@@ -121,14 +116,10 @@ const GenericModal: React.FC<GenericModalProps> = ({
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   type FormSchemaType = z.infer<typeof FormSchema>;
-
-console.log("ICI",FormSchema)
-
   const {
     handleSubmit,
     control,
     reset,
-    register,
     formState: { dirtyFields, errors },
     watch,
     setValue,
@@ -136,6 +127,8 @@ console.log("ICI",FormSchema)
     resolver: zodResolver(FormSchema),
     defaultValues: initialData?.row ? initialData.row : {},
   });
+
+  console.log(errors);
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -156,8 +149,6 @@ console.log("ICI",FormSchema)
     }
   }, [watch("emotionCategoryId")]);
 
-  // console.log("🚧 -> :110 -> errors 🚧", errors);
-
   const fetchBannerUrl = useCallback(async () => {
     if (initialData?.row?.bannerId) {
       try {
@@ -174,27 +165,10 @@ console.log("ICI",FormSchema)
 
   // Show/hide password state
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
-  const [steps, setSteps] = useState<
-    Pick<StepType, "id" | "title" | "description" | "order">[]
-  >([]);
 
   useEffect(() => {
     // Reset du formulaire avec initialData
     reset(initialData?.row || {});
-
-    // S'il y a des étapes, on les ajoute au state
-    if (initialData?.row?.step) {
-      setSteps(
-        initialData.row.step.sort(
-          (
-            a: Pick<StepType, "id" | "title" | "description" | "order">,
-            b: Pick<StepType, "id" | "title" | "description" | "order">
-          ) => a.order - b.order
-        )
-      );
-    } else {
-      setSteps([]);
-    }
 
     // Initialisation de l'état showPassword à false pour tous les champs password
     const initVisibility: Record<string, boolean> = {};
@@ -216,31 +190,19 @@ console.log("ICI",FormSchema)
     setShowPassword((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
-  const handlePatch = (data: any) => {
-    const payload: Record<string, any> = { id: initialData?.id };
+  const handlePatch = (data: Record<string, unknown>) => {
+    const payload: Record<string, unknown> = { id: initialData?.id };
     Object.keys({ ...dirtyFields }).forEach((key) => {
       payload[key] = data[key];
     });
     if (onSubmit) {
-      onSubmit(steps.length > 0 ? { ...payload, step: steps } : payload);
+      onSubmit(payload);
     }
   };
 
-  const handleAddStep = () => {
-    const newStep: Pick<StepType, "id" | "title" | "description" | "order"> = {
-      id: "",
-      title: "",
-      description: "",
-      order: steps.length + 1,
-    };
-    setSteps((prev) => [...prev, newStep]);
-  };
-
   const handleCreate = (payload: FormSchemaType) => {
-    const resource = { ...payload, step: payload.steps, id: initialData?.id };
-    delete resource.steps;
     if (onSubmit) {
-      onSubmit(steps.length > 0 ? resource : payload);
+      onSubmit(payload);
     }
   };
 
@@ -250,6 +212,8 @@ console.log("ICI",FormSchema)
       setSelectedImage(null);
     }
   }, [open]);
+
+  console.log(selectedImage);
 
   return (
     <Dialog
@@ -271,12 +235,12 @@ console.log("ICI",FormSchema)
             return (
               <Controller
                 key={field.name}
-                name={field.name as unknown as string}
+                name={field.name as string}
                 control={control}
                 defaultValue={
                   field.type === "dropdown"
                     ? typeof initialData?.row?.[field.name] === "object"
-                      ? (initialData.row[field.name] as any).id
+                      ? initialData.row[field.name].id
                       : initialData?.row?.[field.name] ?? ""
                     : field.defaultValue ?? ""
                 }
@@ -365,6 +329,7 @@ console.log("ICI",FormSchema)
                               onChange={(event) => {
                                 const file = event.target.files?.[0] ?? null;
                                 ctrl.onChange(file);
+                                setSelectedImage(file);
                                 if (onSubmitBanner && onSubmitFile && file) {
                                   onSubmitBanner(file);
                                   setSelectedImage(file);
@@ -382,7 +347,12 @@ console.log("ICI",FormSchema)
                                   style={{ width: 100, height: 100 }}
                                 />
                                 <IconButton
-                                  onClick={handleRemoveSelectedImage}
+                                  onClick={() => {
+                                    setValue(field.name, null, {
+                                      shouldDirty: true,
+                                    });
+                                    handleRemoveSelectedImage();
+                                  }}
                                   sx={{
                                     position: "absolute",
                                     top: 0,
@@ -401,11 +371,13 @@ console.log("ICI",FormSchema)
                                 </IconButton>
                               </Box>
                             ) : existingBannerUrl ? (
-                              <img
-                                src={existingBannerUrl}
-                                alt="Banner existante"
-                                style={{ width: 100, height: 100 }}
-                              />
+                              <Box sx={{ position: "relative" }}>
+                                <img
+                                  src={existingBannerUrl}
+                                  alt="Banner existante"
+                                  style={{ width: 100, height: 100 }}
+                                />
+                              </Box>
                             ) : null}
                           </Box>
                         </>
@@ -416,96 +388,16 @@ console.log("ICI",FormSchema)
               />
             );
           })}
-          {/* {interfaceActive === "resource" && (
-            <>
-              <Divider sx={{ margin: "1rem 0" }} />
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <Typography variant="h6">Étapes</Typography>
-                <Button onClick={handleAddStep}>Ajouter +</Button>
-              </Box>
-            </>
-          )} */}
-          {/* {steps &&
-            steps.map((step: any, index: number) => (
-              <React.Fragment key={`step-${index}`}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    ml: 2,
-                    flexDirection: "column",
-                    width: "100%",
-                    margin: "0",
-                    gap: 1,
-                    mb: 3,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <InputLabel>Étape</InputLabel>
-                      <Controller
-                        name={`steps.${index}.order`}
-                        control={control}
-                        defaultValue={step.order}
-                        render={({ field: ctrl }) => (
-                          <TextField {...ctrl} type="number" variant="standard" sx={{ width: "30px" }} onChange={(e) => ctrl.onChange(e.target.value)} />
-                        )}
-                      />
-                    </Box>
-                    <Button onClick={() => setSteps((prev) => prev.filter((s) => s.id !== step.id))} sx={{ minWidth: "unset" }}>
-                      <DeleteIcon color="error" />
-                    </Button>
-                  </Box>
-                  <Controller
-                    name={`steps.${index}.title`}
-                    control={control}
-                    defaultValue={step.title}
-                    render={({ field: ctrl, fieldState: { error } }) => (
-                      <TextField
-                        label="Titre *"
-                        fullWidth
-                        error={!!error}
-                        helperText={error?.message}
-                        {...ctrl}
-                        onChange={(e) => {
-                          ctrl.onChange(e.target.value);
-                        }}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name={`steps.${index}.description`}
-                    control={control}
-                    defaultValue={step.description}
-                    render={({ field: ctrl, fieldState: { error } }) => (
-                      <TextField
-                        label="Description *"
-                        error={!!error}
-                        helperText={error?.message}
-                        multiline
-                        type="text"
-                        {...ctrl}
-                        onChange={(e) => ctrl.onChange(e.target.value)}
-                        fullWidth
-                      />
-                    )}
-                  />
-                </Box>
-              </React.Fragment>
-            ))} */}
         </form>
       </DialogContent>
       <DialogActions
         sx={{ justifyContent: initialData?.id ? "space-between" : "flex-end" }}
       >
         {isEdit && initialData?.id && (
-          <Button color="warning" onClick={() => onDelete?.(initialData.id)}>
+          <Button
+            color="warning"
+            onClick={() => onDelete?.(initialData.id.toString())}
+          >
             Supprimer
           </Button>
         )}

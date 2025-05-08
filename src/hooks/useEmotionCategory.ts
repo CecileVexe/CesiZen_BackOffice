@@ -1,5 +1,9 @@
-import { useState } from 'react';
-import { EmotionCategory, EmotionCategoryAddType, EmotionCategoryApi } from '../types/emotionCateogory';
+import { useState } from "react";
+import {
+  EmotionCategory,
+  EmotionCategoryAddType,
+  EmotionCategoryApi,
+} from "../types/emotionCateogory";
 
 interface UseEmotionCategoryApiReturn {
   emotionCategories: EmotionCategoryApi;
@@ -8,19 +12,26 @@ interface UseEmotionCategoryApiReturn {
   error: Error | null;
   fetchEmotionCategories: () => Promise<void>;
   fetchEmotionCategory: (id: string) => Promise<void>;
-  createEmotionCategory: (newResourceType: Omit<EmotionCategory, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateEmotionCategory: (id: number, updatedFields: Partial<EmotionCategory>) => Promise<void>;
-  deleteEmotionCategory: (id: number) => Promise<void>;
+  createEmotionCategory: (
+    newEmotionCategory: Omit<EmotionCategory, "id" | "createdAt" | "updatedAt">
+  ) => Promise<void>;
+  updateEmotionCategory: (
+    id: string,
+    updatedFields: Partial<EmotionCategory>
+  ) => Promise<void>;
+  deleteEmotionCategory: (id: string) => Promise<void>;
 }
 
 const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [emotionCategories, setEmotionCategories] = useState<EmotionCategoryApi>({
-    data: [],
-    message: '',
-    total: 0,
-  });
-  const [emotionCategory, setEmotionCategory] = useState<EmotionCategory | null>(null)
+  const [emotionCategories, setEmotionCategories] =
+    useState<EmotionCategoryApi>({
+      data: [],
+      message: "",
+      total: 0,
+    });
+  const [emotionCategory, setEmotionCategory] =
+    useState<EmotionCategory | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -55,21 +66,22 @@ const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
     }
   };
 
-
-  // Créer une resourceType
-  const createEmotionCategory = async (newResourceType: Omit<EmotionCategory, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const createEmotionCategory = async (
+    newEmotionCategory: Omit<EmotionCategory, "id" | "createdAt" | "updatedAt">
+  ) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/emotion-category`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newResourceType),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEmotionCategory),
       });
-      if (!res.ok) throw new Error(`Erreur lors de la création : ${res.status}`);
-      const createdResourceType: EmotionCategoryAddType = await res.json();
+      if (!res.ok)
+        throw new Error(`Erreur lors de la création : ${res.status}`);
+      const createdEmotionCategory: EmotionCategoryAddType = await res.json();
       setEmotionCategories((prev) => ({
-        data: [...prev.data, createdResourceType.data],
-        message: createdResourceType.message,
+        data: [...prev.data, createdEmotionCategory.data],
+        message: createdEmotionCategory.message,
         total: prev.total + 1,
       }));
     } catch (err: any) {
@@ -77,20 +89,25 @@ const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
     }
   };
 
-  // Mettre à jour une resourceType
-  const updateEmotionCategory = async (id: number, updatedFields: Partial<EmotionCategory>) => {
+  const updateEmotionCategory = async (
+    id: string,
+    updatedFields: Partial<EmotionCategory>
+  ) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/emotion-category/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedFields),
       });
-      if (!res.ok) throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
-      const updatedResourceType: EmotionCategoryAddType = await res.json();
+      if (!res.ok)
+        throw new Error(`Erreur lors de la mise à jour : ${res.status}`);
+      const updatedEmotionCategory: EmotionCategoryAddType = await res.json();
       setEmotionCategories((prev) => ({
-        data: prev.data.map((r) => (r.id === id ? updatedResourceType.data : r)),
-        message: updatedResourceType.message,
+        data: prev.data.map((r) =>
+          r.id === id ? updatedEmotionCategory.data : r
+        ),
+        message: updatedEmotionCategory.message,
         total: prev.total,
       }));
     } catch (err: any) {
@@ -98,18 +115,21 @@ const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
     }
   };
 
-  // Supprimer une resourceType
-  const deleteEmotionCategory = async (id: number) => {
+  const deleteEmotionCategory = async (id: string) => {
     setError(null);
     try {
       const res = await fetch(`${baseUrl}/emotion-category/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      if (!res.ok) throw new Error(`Erreur lors de la suppression : ${res.status}`);
-      const messageDeletedResourceType: Omit<EmotionCategoryAddType, 'data'> = await res.json();
+      if (!res.ok)
+        throw new Error(`Erreur lors de la suppression : ${res.status}`);
+      const messageDeletedEmotionCategory: Omit<
+        EmotionCategoryAddType,
+        "data"
+      > = await res.json();
       setEmotionCategories((prev) => ({
         data: prev.data.filter((r) => r.id !== id),
-        message: messageDeletedResourceType.message,
+        message: messageDeletedEmotionCategory.message,
         total: prev.total - 1,
       }));
     } catch (err: any) {

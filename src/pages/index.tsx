@@ -1,6 +1,13 @@
-import useusers from "../hooks/useUsers";
 import { useEffect, useState } from "react";
-import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
@@ -10,12 +17,11 @@ import HeaderGrid from "../components/HeaderGrid";
 import ModalEdition, { FieldConfig } from "../components/ModalEdition";
 import { useDebounce } from "../hooks/useDebounce";
 import useRoles from "../hooks/useRoles";
-import { FormSchema } from "../validation/citizenValidation";
 import { useUser } from "@clerk/clerk-react";
 import useUsers from "../hooks/useUsers";
+import { FormSchema } from "../validation/userValidation";
 
 const columns: GridColDef[] = [
- 
   { field: "name", headerName: "Prénom", width: 130 },
   { field: "surname", headerName: "Nom", width: 130 },
   {
@@ -28,7 +34,7 @@ const columns: GridColDef[] = [
     headerName: "Nom complet",
     sortable: false,
     width: 160,
-    valueGetter: (value, row) => `${row.surname || ""} ${row.name || ""}`,
+    valueGetter: (_value, row) => `${row.surname || ""} ${row.name || ""}`,
   },
   {
     field: "role",
@@ -40,7 +46,16 @@ const columns: GridColDef[] = [
 
 const Index = () => {
   const { user } = useUser();
-  const { fetchUsers, users, loading, error, createUser, updateUser, deleteUser, fetchUserActive } = useUsers();
+  const {
+    fetchUsers,
+    users,
+    loading,
+    error,
+    createUser,
+    updateUser,
+    deleteUser,
+    fetchUserActive,
+  } = useUsers();
   const { fetchRoles, roles } = useRoles();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -105,13 +120,16 @@ const Index = () => {
     const fetchUserRole = async () => {
       if (user?.id) {
         try {
-          const citizen = await fetchUserActive(user.id);
-          if (citizen?.role?.name === "USER" || citizen?.role?.name === "MODERATOR") {
+          const fetchedUser = await fetchUserActive(user.id);
+          if (fetchedUser?.role?.name === "USER") {
             console.log("Rôle détecté : USER");
             window.location.href = "/401";
           }
         } catch (error) {
-          console.error("Erreur lors de la récupération du citoyen actif :", error);
+          console.error(
+            "Erreur lors de la récupération du citoyen actif :",
+            error
+          );
         }
       }
     };
@@ -133,11 +151,15 @@ const Index = () => {
   }, [perPage, users]);
 
   useEffect(() => {
-    const filtered = users.data.filter((c) => `${c.name} ${c.surname} ${c.email}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
+    const filtered = users.data.filter((c) =>
+      `${c.name} ${c.surname} ${c.email}`
+        .toLowerCase()
+        .includes(debouncedSearch.trim().toLowerCase())
+    );
     setCitiensFiltered(filtered);
   }, [debouncedSearch, users]);
 
-  const handleRowDoubleClick = (rowData: any) => {
+  const handleRowDoubleClick = (rowData: GridRowParams) => {
     setFormData(rowData);
     setOpen(true);
   };
@@ -161,11 +183,23 @@ const Index = () => {
   };
 
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <HeaderGrid title="Liste des citoyens" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
+          <HeaderGrid
+            title="Liste des utilisateurs"
+            onAddClick={() => setOpen(true)}
+            searchValue={search}
+            onSearchChange={setSearch}
+          />
           <GridComponent
             rows={usersFiltered}
             columns={columns}
@@ -173,12 +207,27 @@ const Index = () => {
             hideFooter={true}
             onRowDoubleClick={(params) => handleRowDoubleClick(params)}
           />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "flex", flexDirection: "row" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <FormControl
+              variant="standard"
+              sx={{
+                m: 1,
+                minWidth: 120,
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
               <InputLabel variant="outlined">Ligne par page</InputLabel>
               <Select
                 value={perPage}
-                onChange={(e: any) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onChange={(e: SelectChangeEvent<any>) => {
                   setPerPage(parseInt(e.target.value));
                   setPage(1);
                 }}
@@ -196,7 +245,10 @@ const Index = () => {
               <Typography>
                 {page} sur {count}
               </Typography>
-              <Button onClick={() => setPage(page + 1)} disabled={page === count}>
+              <Button
+                onClick={() => setPage(page + 1)}
+                disabled={page === count}
+              >
                 +
               </Button>
             </Box>

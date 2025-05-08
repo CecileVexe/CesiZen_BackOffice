@@ -1,5 +1,13 @@
 import { useEffect } from "react";
-import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
 import GridComponent from "../components/Grid";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
@@ -15,7 +23,6 @@ import useArticles from "../hooks/useArticles";
 import { ArticleType } from "../types/article";
 import useArticleCategory from "../hooks/useArticleCategory";
 
-
 const columns: GridColDef[] = [
   { field: "title", headerName: "Titre", width: 400 },
   { field: "description", headerName: "Description", width: 600 },
@@ -25,30 +32,48 @@ const columns: GridColDef[] = [
     width: 250,
     valueGetter: (value: { name: string }) => `${value.name}`,
   },
-    { field: "readingTime", headerName: "Temps de lecture (min)", width: 200 },
-
+  { field: "readingTime", headerName: "Temps de lecture (min)", width: 200 },
 ];
 
 const Index = () => {
   const { fetchUserActive } = useUsers();
   const { user } = useUser();
 
-
-  const { fetchArticles, articles, loading, error, createArticle, updateArticle, deleteArticle, fetchArticle } = useArticles();
+  const {
+    fetchArticles,
+    articles,
+    loading,
+    error,
+    createArticle,
+    updateArticle,
+    deleteArticle,
+    fetchArticle,
+  } = useArticles();
   const { fetchArticleCategories, articleCategories } = useArticleCategory();
   const [page, setPage] = useState<number>(1);
-  const [perPage, setPerPage] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(50);
   const [count, setCount] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [articlesFiltered, setArticlesFiltered] = useState<ArticleType[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<GridRowParams | null>(null);
-  const [file, setFile] = useState<File | null>(null);
   const [banner, setBanner] = useState<File | null>(null);
 
-  const ressourceFormConfig: FieldConfig[] = [
-    { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
-    { name: "description", label: "Description", type: "text", validation: { required: "La description est requise" }, showOn: "always" }, 
+  const articleFormConfig: FieldConfig[] = [
+    {
+      name: "title",
+      label: "Titre",
+      type: "text",
+      validation: { required: "Le titre est requis" },
+      showOn: "always",
+    },
+    {
+      name: "description",
+      label: "Description",
+      type: "text",
+      validation: { required: "La description est requise" },
+      showOn: "always",
+    },
     {
       name: "categoryId",
       label: "Catégorie",
@@ -60,31 +85,52 @@ const Index = () => {
         label: cat.name,
       })),
     },
-    { name: "banner", label: "Bannière", type: "banner", validation: {}, showOn: "always" },
-    { name: "content", label: "Contenu", type: "textArea", validation: {}, showOn: "always" },
-    { name: "readingTime", label: "Temps de lecture (min)", type: "number", validation: {}, showOn: "always" },
+    {
+      name: "banner",
+      label: "Bannière",
+      type: "banner",
+      validation: {},
+      showOn: "always",
+    },
+    {
+      name: "content",
+      label: "Contenu",
+      type: "textArea",
+      validation: {},
+      showOn: "always",
+    },
+    {
+      name: "readingTime",
+      label: "Temps de lecture (min)",
+      type: "number",
+      validation: {},
+      showOn: "always",
+    },
   ];
 
   const debouncedSearch = useDebounce(search, 500);
 
-    // Récupération du rôle utilisateur et log si USER
-    useEffect(() => {
-      const fetchUserRole = async () => {
-        if (user?.id) {
-          try {
-            const citizen = await fetchUserActive(user.id);
-            if (citizen?.role?.name === "USER") {
-              console.log("Rôle détecté : USER");
-              window.location.href = "/401";
-            }
-          } catch (error) {
-            console.error("Erreur lors de la récupération du citoyen actif :", error);
+  // Récupération du rôle utilisateur et log si USER
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        try {
+          const fetchedUser = await fetchUserActive(user.id);
+          if (fetchedUser?.role?.name === "USER") {
+            console.log("Rôle détecté : USER");
+            window.location.href = "/401";
           }
+        } catch (error) {
+          console.error(
+            "Erreur lors de la récupération du citoyen actif :",
+            error
+          );
         }
-      };
-  
-      fetchUserRole();
-    }, [user]);
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
 
   useEffect(() => {
     fetchArticleCategories();
@@ -94,22 +140,28 @@ const Index = () => {
     fetchArticles({ page: page, perPage: perPage });
   }, [perPage, page]);
 
-  useEffect(() => { const totalCount = Math.ceil (articles.total / perPage);
-    setCount(totalCount);}, [perPage, articles]);
+  useEffect(() => {
+    const totalCount = Math.ceil(articles.total / perPage);
+    setCount(totalCount);
+  }, [perPage, articles]);
 
   useEffect(() => {
-    const filtered = articles.data.filter((c) => `${c.title} ${c.description}`.toLowerCase().includes(debouncedSearch.trim().toLowerCase()));
+    const filtered = articles.data.filter((c) =>
+      `${c.title} ${c.description}`
+        .toLowerCase()
+        .includes(debouncedSearch.trim().toLowerCase())
+    );
 
     setArticlesFiltered(filtered);
   }, [debouncedSearch, articles]);
 
-  const handleRowDoubleClick = async (rowData: any) => {
-    await fetchArticle(rowData.id).then((resource) => {
+  const handleRowDoubleClick = async (rowData: GridRowParams) => {
+    await fetchArticle(rowData.id.toString()).then((article) => {
       setFormData({
         ...rowData,
         row: {
-          ...resource,
-          categoryId: resource.category.id,
+          ...article,
+          categoryId: article.category.id,
         },
       });
     });
@@ -118,17 +170,13 @@ const Index = () => {
 
   const handleSubmitClick = (data: ArticleType) => {
     if (data.id) {
-     
       const { ...rest } = data;
       updateArticle(data.id.toString(), {
         ...rest,
-      
       });
     } else {
-      console.log("DATA", data)
       createArticle({
         ...data,
-       
       });
     }
     handleCloseModal();
@@ -143,22 +191,30 @@ const Index = () => {
     setOpen(false);
   };
 
-  const handleFileChange = (data: File) => {
-    setFile(data);
-  };
-
-  const handleBannerChange = (data: File) => {
+  const handleBannerChange = () => {
     setBanner(banner);
   };
 
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       {error && <ErrorComponent errorMessage={error?.message} />}
       {!loading && !error && (
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <HeaderGrid title="Liste des ressources" onAddClick={() => setOpen(true)} searchValue={search} onSearchChange={setSearch} />
+          <HeaderGrid
+            title="Liste des articles"
+            onAddClick={() => setOpen(true)}
+            searchValue={search}
+            onSearchChange={setSearch}
+          />
           <GridComponent
-            rows= {articlesFiltered}
+            rows={articlesFiltered}
             columns={columns}
             loading={loading}
             hideFooter={true}
@@ -166,8 +222,22 @@ const Index = () => {
               handleRowDoubleClick(params);
             }}
           />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "flex", flexDirection: "row" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <FormControl
+              variant="standard"
+              sx={{
+                m: 1,
+                minWidth: 120,
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
               <InputLabel variant="outlined">Ligne par page</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -175,7 +245,8 @@ const Index = () => {
                 value={perPage}
                 label="Ligne par page"
                 sx={{ width: "100%" }}
-                onChange={(data: any) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onChange={(data: SelectChangeEvent<any>) => {
                   setPerPage(parseInt(data.target.value));
                   setPage(1);
                 }}
@@ -212,17 +283,15 @@ const Index = () => {
             open={open}
             FormSchema={FormSchemaArticle}
             onClose={() => handleCloseModal()}
-            title={formData ? "Modifier une ressource" : "Créer une ressource"}
-            fields={ressourceFormConfig}
+            title={formData ? "Modifier une article" : "Créer une article"}
+            fields={articleFormConfig}
             onSubmit={(data) => handleSubmitClick(data)}
             initialData={formData}
             TransitionProps={{ onExited: () => setFormData(null) }}
             onDelete={(id) => {
               handleDeleteClick(id);
             }}
-            onSubmitFile={(data) => handleFileChange(data)}
-            onSubmitBanner={(data) => handleBannerChange(data)}
-            
+            onSubmitBanner={() => handleBannerChange()}
           />
         </Box>
       )}

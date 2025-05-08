@@ -13,18 +13,24 @@ interface ErrorComponentProps {
   maintenanceContact?: string;
 }
 
-const ErrorComponent: React.FC<ErrorComponentProps> = ({ errorMessage, maintenanceContact = "maintenance@example.com" }) => {
+const ErrorComponent: React.FC<ErrorComponentProps> = ({
+  errorMessage,
+  maintenanceContact = "maintenance@example.com",
+}) => {
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Oups, une erreur est survenue !</h2>
-      <p style={styles.message}>Nous rencontrons actuellement un problème technique.</p>
+      <p style={styles.message}>
+        Nous rencontrons actuellement un problème technique.
+      </p>
       {errorMessage && (
         <p style={styles.errorDetails}>
           Détails de l'erreur : <em>{errorMessage}</em>
         </p>
       )}
       <p style={styles.contact}>
-        Merci de bien vouloir informer le service de maintenance en envoyant un email à{" "}
+        Merci de bien vouloir informer le service de maintenance en envoyant un
+        email à{" "}
         <a href={`mailto:${maintenanceContact}`} style={styles.link}>
           {maintenanceContact}
         </a>{" "}

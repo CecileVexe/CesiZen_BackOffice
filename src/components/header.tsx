@@ -1,5 +1,13 @@
 import React from "react";
-import { AppBar, Toolbar, IconButton, Box, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Box,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { useUser, useClerk } from "@clerk/clerk-react";
 
 const Header = () => {
@@ -27,10 +35,16 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={1} sx={{ width: "100%", top: 0 }} id="header">
+    <AppBar
+      position="static"
+      color="default"
+      elevation={1}
+      sx={{ width: "100%", top: 0 }}
+      id="header"
+    >
       <Toolbar>
         <Box sx={{ flexGrow: 1, margin: "20px 0px" }}>
-          <img src="/logo.png" alt="Vivactive Logo" style={{ height: 45 }} />
+          <img src="/logo.png" alt="CesiZen Logo" style={{ height: 45 }} />
         </Box>
 
         {isSignedIn && (
@@ -51,7 +65,11 @@ const Header = () => {
                 {getInitials()}
               </Typography>
             </IconButton>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
               <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
             </Menu>
           </>

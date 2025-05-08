@@ -15,7 +15,6 @@ import useUsers from "../hooks/useUsers";
 import useArticleCategory from "../hooks/useArticleCategory";
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Nom", width: 130 },
   { field: "description", headerName: "Description", width: 750 },
 ];

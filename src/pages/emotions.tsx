@@ -15,7 +15,6 @@ import useEmotionCategory from "../hooks/useEmotionCategory";
 import useEmotions from "../hooks/useEmotion";
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 100 },
   { field: "name", headerName: "Nom", width: 200 },
   { field: "color", headerName: "Couleur", width: 200 },
   {

@@ -47,7 +47,7 @@ const Index = () => {
 
   const ressourceFormConfig: FieldConfig[] = [
     { name: "title", label: "Titre", type: "text", validation: { required: "Le titre est requis" }, showOn: "always" },
-    { name: "description", label: "Description", type: "textArea", validation: { required: "La description est requise" }, showOn: "always" }, 
+    { name: "description", label: "Description", type: "text", validation: { required: "La description est requise" }, showOn: "always" }, 
     {
       name: "categoryId",
       label: "Catégorie",
@@ -147,6 +147,9 @@ const Index = () => {
     setBanner(banner);
   };
 
+    console.log(formData)
+
+
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
       {error && <ErrorComponent errorMessage={error?.message} />}
@@ -218,7 +221,7 @@ const Index = () => {
             }}
             onSubmitFile={(data) => handleFileChange(data)}
             onSubmitBanner={(data) => handleBannerChange(data)}
-            interfaceActive="resource"
+            
           />
         </Box>
       )}

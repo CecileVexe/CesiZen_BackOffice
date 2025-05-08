@@ -22,7 +22,7 @@ import StatsPage from "./pages/dashbord";
 import EmotionCategory from "./pages/emotionCategory";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import Erreur401 from "./pages/Error401";
-import Comment from "./pages/comment";
+import Emotion from "./pages/emotions";
 
 function App() {
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -42,6 +42,7 @@ function App() {
         <Route path="/dashboard" element={<StatsPage />} />
         <Route path="/article-categories" element={<ArticleCategory />} />
         <Route path="/emotion-categories" element={<EmotionCategory />} />
+        <Route path="/emotions" element={<Emotion />} />
         <Route
           path="/"
           element={
@@ -57,7 +58,6 @@ function App() {
         />
         <Route path="*" element={<Erreur404 />} />
         <Route path="/401" element={<Erreur401 />} />
-        <Route path="/comments" element={<Comment />} />
       </Routes>
     </div>
   );

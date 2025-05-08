@@ -54,12 +54,14 @@ export interface FieldConfig {
     | "bannerId"
     | "color"
     | "smiley"
+    | "emotionCategoryId"
   label: string;
+  
   type: "text" | "number" | "email" | "password" | "file" | "banner" | "dropdown" | "textArea" | "date" | "checkbox" | "textArea" | "color";
   defaultValue?: string | number;
   validation?: Record<string, any>;
   showOn: "create" | "edit" | "always";
-  options?: Array<{ value: string | number; label: string | JSX.Element }> | null;
+  options?: Array<{ value: string | number; label: string | JSX.Element; color?: string}> | null;
   isDisabled?: boolean;
   dataFormat?: (value: any) => string;
 }
@@ -107,10 +109,26 @@ const GenericModal: React.FC<GenericModalProps> = ({
     reset,
     register,
     formState: { dirtyFields, errors },
+    watch,
+    setValue
   } = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: initialData?.row ? initialData.row : {},
   });
+
+  useEffect(() => {
+  const selectedCategoryId = watch("emotionCategoryId");
+
+  
+  const selectedCategory = fields.find(
+    (field) => field.name === "emotionCategoryId"
+  )?.options?.find((opt) => opt.value === selectedCategoryId);
+  
+  if (selectedCategory) {
+    const categoryColor = selectedCategory?.color || "#ffffff";
+    setValue("color", categoryColor);
+  }
+}, [watch("emotionCategoryId")]);
 
   console.log("🚧 -> :110 -> errors 🚧", errors);
 

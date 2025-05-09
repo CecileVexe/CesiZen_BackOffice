@@ -93,13 +93,12 @@ const Index = () => {
           message: "L'email n'est pas valide",
         },
       },
-      showOn: "always",
+      showOn: "create",
     },
     {
       name: "password",
       label: "Mot de passe",
       type: "password",
-      validation: { required: "Le mot de passe est requis" },
       showOn: "create",
     },
     {
@@ -107,7 +106,7 @@ const Index = () => {
       label: "Role",
       type: "dropdown",
       validation: {},
-      showOn: "create",
+      showOn: "always",
       options: roles.data.map((role) => ({
         label: role.name,
         value: role.id,

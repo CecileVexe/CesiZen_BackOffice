@@ -48,7 +48,8 @@ export interface FieldConfig {
     | "banner"
     | "color"
     | "smiley"
-    | "emotionCategoryId";
+    | "emotionCategoryId"
+    | "clerkId"
   label: string;
 
   type:
@@ -145,7 +146,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
 
     if (selectedCategory) {
       const categoryColor = selectedCategory?.color || "#ffffff";
-      setValue("color", categoryColor);
+      setValue("color", categoryColor, { shouldDirty: true });
     }
   }, [watch("emotionCategoryId")]);
 

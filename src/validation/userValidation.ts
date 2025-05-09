@@ -10,8 +10,6 @@ export const FormSchema = z.object({
   email: z.string({
     required_error: "L'email est requis",
   }),
-  password: z.string({
-    required_error: "Le mot de passe est requis",
-  }),
+  password: z.any(),
   roleId: z.string().optional(),
 });

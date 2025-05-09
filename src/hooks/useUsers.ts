@@ -1,6 +1,7 @@
 // src/hooks/useUsers.ts
 import { useState } from "react";
 import { UserType, UserAddType, UsersType } from "../types/user";
+import { useAuthFetch } from "../utils/authFetch";
 
 interface UseUsersReturn {
   users: UsersType;
@@ -21,6 +22,7 @@ interface UseUsersReturn {
 
 const useUsers = (): UseUsersReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
+  const authFetch = useAuthFetch();
   const [users, setUsers] = useState<UsersType>({
     data: [],
     message: "",
@@ -39,7 +41,7 @@ const useUsers = (): UseUsersReturn => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `${
           page && perPage
             ? baseUrl + "/user" + `?page=${page}&perPage=${perPage}`
@@ -59,7 +61,7 @@ const useUsers = (): UseUsersReturn => {
   const createUser = async (newUser: Omit<UserType, "id">) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/user`, {
+      const res = await authFetch(`${baseUrl}/user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newUser),
@@ -77,11 +79,10 @@ const useUsers = (): UseUsersReturn => {
     }
   };
 
-  // Mettre à jour un citoyen
   const updateUser = async (id: string, updatedFields: Partial<UserType>) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/user/${id}`, {
+      const res = await authFetch(`${baseUrl}/user/role/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedFields),
@@ -104,7 +105,7 @@ const useUsers = (): UseUsersReturn => {
   const deleteUser = async (id: string) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/user/${id}`, {
+      const res = await authFetch(`${baseUrl}/user/${id}`, {
         method: "DELETE",
       });
       if (!res.ok)
@@ -120,12 +121,11 @@ const useUsers = (): UseUsersReturn => {
     }
   };
 
-  // Récupérer le citoyen actif via son userId Clerk
   const fetchUserActive = async (userId: string): Promise<UserType | null> => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/user/clerk/${userId}`);
+      const res = await authFetch(`${baseUrl}/user/clerk/${userId}`);
       if (!res.ok)
         throw new Error(
           `Erreur lors du chargement de l'utilisateur actif : ${res.status}`

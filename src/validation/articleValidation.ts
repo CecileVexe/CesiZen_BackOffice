@@ -24,7 +24,7 @@ export const FormSchemaArticle: ZodType<unknown> = z.object({
     .optional()
     .refine(
       (file) =>
-        file.length == 1
+        file?.length == 1
           ? ACCEPTED_IMAGE_TYPES.includes(file?.[0]?.type)
             ? true
             : false
@@ -33,7 +33,7 @@ export const FormSchemaArticle: ZodType<unknown> = z.object({
     )
     .refine(
       (file) =>
-        file.length == 1
+        file?.length == 1
           ? file[0]?.size <= MAX_FILE_SIZE
             ? true
             : false

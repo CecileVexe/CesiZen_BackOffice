@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArticleAddType, ArticlesType, ArticleType } from "../types/article";
+import { useAuthFetch } from "../utils/authFetch";
 
 interface UseArticlesReturn {
   articles: ArticlesType;
@@ -24,6 +25,7 @@ interface UseArticlesReturn {
 
 const useArticles = (): UseArticlesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
+    const authFetch = useAuthFetch();
   const [articles, setArticles] = useState<ArticlesType>({
     data: [],
     message: "",
@@ -33,7 +35,6 @@ const useArticles = (): UseArticlesReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Récupérer la liste des citoyens
   const fetchArticles = async ({
     page,
     perPage,
@@ -78,7 +79,6 @@ const useArticles = (): UseArticlesReturn => {
     }
   };
 
-  // Créer un nouveau citoyen
   const createArticle = async (
     newArticle: Omit<ArticleType, "id">
   ): Promise<ArticleType> => {
@@ -97,7 +97,7 @@ const useArticles = (): UseArticlesReturn => {
         formData.append("banner", newArticle.banner);
       }
 
-      const res = await fetch(`${baseUrl}/article`, {
+      const res = await authFetch(`${baseUrl}/article`, {
         method: "POST",
         body: formData,
       });
@@ -117,7 +117,6 @@ const useArticles = (): UseArticlesReturn => {
     }
   };
 
-  // Mettre à jour un citoyen
   const updateArticle = async (
     id: string,
     updatedFields: Partial<ArticleType>
@@ -136,7 +135,7 @@ const useArticles = (): UseArticlesReturn => {
         }
       }
 
-      const res = await fetch(`${baseUrl}/article/${id}`, {
+      const res = await authFetch(`${baseUrl}/article/${id}`, {
         method: "PATCH",
         body: formData,
       });
@@ -158,11 +157,10 @@ const useArticles = (): UseArticlesReturn => {
     }
   };
 
-  // Supprimer un citoyen
   const deleteArticle = async (id: string) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/article/${id}`, {
+      const res = await authFetch(`${baseUrl}/article/${id}`, {
         method: "DELETE",
       });
       if (!res.ok)

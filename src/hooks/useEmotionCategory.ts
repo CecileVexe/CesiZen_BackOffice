@@ -4,6 +4,7 @@ import {
   EmotionCategoryAddType,
   EmotionCategoryApi,
 } from "../types/emotionCateogory";
+import { useAuthFetch } from "../utils/authFetch";
 
 interface UseEmotionCategoryApiReturn {
   emotionCategories: EmotionCategoryApi;
@@ -24,6 +25,7 @@ interface UseEmotionCategoryApiReturn {
 
 const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
+    const authFetch = useAuthFetch();
   const [emotionCategories, setEmotionCategories] =
     useState<EmotionCategoryApi>({
       data: [],
@@ -35,7 +37,6 @@ const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Récupérer les emotionCategories
   const fetchEmotionCategories = async () => {
     setLoading(true);
     setError(null);
@@ -71,7 +72,7 @@ const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
   ) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/emotion-category`, {
+      const res = await authFetch(`${baseUrl}/emotion-category`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEmotionCategory),
@@ -95,7 +96,7 @@ const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
   ) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/emotion-category/${id}`, {
+      const res = await authFetch(`${baseUrl}/emotion-category/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedFields),
@@ -118,7 +119,7 @@ const useEmotionCategory = (): UseEmotionCategoryApiReturn => {
   const deleteEmotionCategory = async (id: string) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/emotion-category/${id}`, {
+      const res = await authFetch(`${baseUrl}/emotion-category/${id}`, {
         method: "DELETE",
       });
       if (!res.ok)

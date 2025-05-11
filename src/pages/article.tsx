@@ -169,6 +169,8 @@ const Index = () => {
   };
 
   const handleSubmitClick = (data: ArticleType) => {
+
+
     if (data.id) {
       const { ...rest } = data;
       updateArticle(data.id.toString(), {

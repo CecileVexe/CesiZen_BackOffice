@@ -32,7 +32,6 @@ const useArticleCategory = (): UseCategoriesReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Récupérer la liste des catégories
   const fetchArticleCategories = async () => {
     setLoading(true);
     setError(null);
@@ -48,7 +47,6 @@ const useArticleCategory = (): UseCategoriesReturn => {
     }
   };
 
-  // Créer une nouvelle catégorie
   const createArticleCategory = async (
     newCategory: Omit<ArticleCategoryType, "id">
   ) => {
@@ -72,7 +70,6 @@ const useArticleCategory = (): UseCategoriesReturn => {
     }
   };
 
-  // Mettre à jour une catégorie
   const updateArticleCategory = async (
     id: string,
     updatedFields: Partial<ArticleCategoryType>
@@ -99,7 +96,6 @@ const useArticleCategory = (): UseCategoriesReturn => {
     }
   };
 
-  // Supprimer une catégorie
   const deleteArticleCategory = async (id: string) => {
     setError(null);
     try {

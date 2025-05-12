@@ -25,7 +25,7 @@ interface UseArticlesReturn {
 
 const useArticles = (): UseArticlesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
-    const authFetch = useAuthFetch();
+  const authFetch = useAuthFetch();
   const [articles, setArticles] = useState<ArticlesType>({
     data: [],
     message: "",
@@ -86,7 +86,6 @@ const useArticles = (): UseArticlesReturn => {
     try {
       const formData = new FormData();
 
-      // Champs texte / number (converti en string automatiquement)
       formData.append("title", newArticle.title);
       formData.append("description", newArticle.description);
       formData.append("readingTime", newArticle.readingTime.toString());

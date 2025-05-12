@@ -1,4 +1,3 @@
-// src/hooks/useUsers.ts
 import { useState } from "react";
 import { UserType, UserAddType, UsersType } from "../types/user";
 import { useAuthFetch } from "../utils/authFetch";

@@ -73,7 +73,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            cd cesiZen/recette
+            cd cesizen/recette
             sudo docker compose -f docker-compose.global.yml pull
             sudo docker compose -f docker-compose.global.yml up -d
   

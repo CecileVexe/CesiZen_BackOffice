@@ -2,9 +2,7 @@ name: 🚀 Build and deploy
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   push:
-    # branches: 
-    #  - main
-    #  - test
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,121 +23,26 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
       - run : echo "🏁 Étapes de construction terminées"
 
-  # test:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       browser: [chrome, edge]
-  #   needs:
-  #       - build
-  #   steps:
-  #     - run: echo "🚀 Lancement des étapes de test"
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #     - name: Restore cache (node_modules)
-  #       uses: actions/cache/restore@v4
-  #       with:
-  #         path: |
-  #           node_modules
-  #           /home/runner/.cache/Cypress
-  #         key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
-  #     - run: echo "🚀 Le code du dépôt a été cloné sur le serveur d'exécution."
-  #     #- run: npm run e2e:headless
-  #     - uses: cypress-io/github-action@v6
-  #       with: 
-  #         install: false
-  #         start: npm run dev
-  #         browser: ${{matrix.browser}}
-  #     - run : echo "🚀 Étapes de test terminées"
-  #     - uses: actions/upload-artifact@v4
-  #       if: always()
-  #       with:
-  #       #Pour éviter une erreur de données dupliqué, on donne un nom dynamique
-  #         name: cypress-video-${{matrix.browser}}
-  #         path: cypress/videos/
-  #         retention-days: 5
-  #     - uses: actions/upload-artifact@v4
-  #       if: failure()
-  #       with:
-  #         name: cypress-screenshots-${{matrix.browser}}
-  #         path: cypress/screenshots/
-  #         retention-days: 5
-  
-  # deploy :
-  #   runs-on: ubuntu-latest
-  #   needs : test
-  #   steps:
-  #   - uses: actions/checkout@v4 #recupérer le code
-    
-  #   - name: Deploy to EC2
-  #     env:
-  #       PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
-  #       HOST: ${{ secrets.EC2_HOST }}
-  #       USER: ${{ secrets.EC2_USER }}
-  #     run: |
-  #       echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
-  #       ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
-  #       echo "Current directory: $(pwd)"
-  #       echo "Listing home directory:"
-  #       ls -la ~
-
-  #       echo "Installing Node.js..."
-  #       if ! command -v nvm &> /dev/null; then
-  #         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-  #         export NVM_DIR="$HOME/.nvm"
-  #         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  #       fi
-  #       nvm install node
-
-  #       echo "Installing PM2..."
-  #       if ! command -v pm2 &> /dev/null; then
-  #       npm install -g pm2
-  #       fi
-
-  #       REPO_URL="https://github.com/CecileVexe/NEXT_CI_CD"
-  #       BRANCH="main"
-  #       REPO_DIR="$HOME"
-
-  #       if [ -d "$REPO_DIR/.git" ]; then
-  #         cd "$REPO_DIR"
-  #         git pull origin "$BRANCH"
-  #       else
-  #         git clone "$REPO_URL" "$REPO_DIR"
-  #         cd "$REPO_DIR"
-  #       fi
-
-  #       cd "$REPO_DIR/NEXT_CI_CD"
-  #       git pull origin main
-  #       npm install
-  #       npm run build
-
-  #       echo "Starting/restarting application..."
-  #       pm2 restart NEXT_CI_CD || pm2 start npm --name NEXT_CI_CD -- run start
-  #       pm2 list
-  #       '
-  
-  # build-push-docker :
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     packages: write
-
-  #   # needs: test
-  #   steps:
-  #   - uses: actions/checkout@v4 #recupérer le code
-  #   - name: Login to GitHub Container Registry
-  #     uses: docker/login-action@v3
-  #     with:
-  #       registry: ghcr.io
-  #       username: ${{github.actor}}
-  #       password: ${{secrets.GITHUB_TOKEN}}
-  #   - name: Build and push docker
-  #     uses: docker/build-push-action@v6
-  #     with: 
-  #       context : .
-  #       push: true
-  #       target: next-ci-cd #nom de l'image concerné dans le Dockerfile
-  #       tags: ghcr.io/cecilevexe/next_ci_cd/next-ci-cd:${{github.ref_name}} #avec le tag du nom de la branche sur laquelle on a push
+  build-push-docker :
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v4 #recupérer le code
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
+    - name: Build and push docker
+      uses: docker/build-push-action@v6
+      with: 
+        context : .
+        push: true
+        target: cesizen_backoffice #nom de l'image concerné dans le Dockerfile
+        tags: ghcr.io/cecilevexe/cesizen_backoffice/cesizen_backoffice:${{github.ref_name}} #avec le tag du nom de la branche sur laquelle on a push
   
   # # deploy-docker:
   # #   runs-on: ubuntu-latest

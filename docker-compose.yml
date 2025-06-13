@@ -1,0 +1,7 @@
+services:
+  backoffice:
+    build: .
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3001:3000

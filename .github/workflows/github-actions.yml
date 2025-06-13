@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: contains(github.ref, "recette")
+    if: contains(github.ref, 'recette')
     steps:
       - run: echo "🚀 Lancement des étapes de construction"
       - name: Check out repository code

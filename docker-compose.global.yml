@@ -9,9 +9,9 @@ services:
   database:
     image: mariadb:11.8.2  
     environment:
-      MARIADB_DATABASE: cesizen  
-      MARIADB_USER: leadAdmin   
-      MARIADB_PASSWORD: leadAdminP@55w0rd  
+      MARIADB_DATABASE: ${ENV_DATABASE}  
+      MARIADB_USER: ${ENV_USER}   
+      MARIADB_PASSWORD: ${ENV_PASSWORD}  
       MARIADB_RANDOM_ROOT_PASSWORD: 1  
     ports:
       - "3306:3306"

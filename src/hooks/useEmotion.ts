@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { EmotionAddType, EmotionType, EmotionTypeApi } from "../types/emotion";
+import { useAuthFetch } from "../utils/authFetch";
 
 interface UseEmotionsReturn {
   emotions: EmotionTypeApi;
@@ -18,6 +19,7 @@ interface UseEmotionsReturn {
 
 const useEmotions = (): UseEmotionsReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
+  const authFetch = useAuthFetch();
   const [emotions, setEmotions] = useState<EmotionTypeApi>({
     data: [],
     message: "",
@@ -26,7 +28,6 @@ const useEmotions = (): UseEmotionsReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Récupérer la liste des citoyens
   const fetchEmotions = async () => {
     setLoading(true);
     setError(null);
@@ -47,7 +48,7 @@ const useEmotions = (): UseEmotionsReturn => {
   ) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/emotion`, {
+      const res = await authFetch(`${baseUrl}/emotion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEmotion),
@@ -71,7 +72,7 @@ const useEmotions = (): UseEmotionsReturn => {
   ) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/emotion/${id}`, {
+      const res = await authFetch(`${baseUrl}/emotion/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedFields),
@@ -89,11 +90,10 @@ const useEmotions = (): UseEmotionsReturn => {
     }
   };
 
-  // Supprimer un citoyen
   const deleteEmotion = async (id: string) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/emotion/${id}`, {
+      const res = await authFetch(`${baseUrl}/emotion/${id}`, {
         method: "DELETE",
       });
       if (!res.ok)

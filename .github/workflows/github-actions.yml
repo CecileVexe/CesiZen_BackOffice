@@ -1,0 +1,104 @@
+name: 🚀 Build and deploy
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🚀 Lancement des étapes de construction"
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "🚀 Le code du dépôt a été cloné sur le serveur d'exécution."
+      - run: npm clean-install
+      - run: npm run build
+      - name: Save cache (node_modules)
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+            /home/runner/.cache/Cypress
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+      - run : echo "🏁 Étapes de construction terminées"
+
+  build-push-docker :
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env: 
+      VITE_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_b3JnYW5pYy1oYXdrLTE2LmNsZXJrLmFjY291bnRzLmRldiQ
+      VITE_BASE_URL: "http://ec2-23-22-102-8.compute-1.amazonaws.com:3000"
+    steps:
+    - uses: actions/checkout@v4 #recupérer le code
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
+    - name: Build and push docker
+      uses: docker/build-push-action@v6
+      with: 
+        context : .
+        push: true
+        target: cesizen_backoffice #nom de l'image concerné dans le Dockerfile
+        tags: ghcr.io/cecilevexe/cesizen_backoffice/cesizen_backoffice:recette #avec le tag du nom de la branche sur laquelle on a push
+  
+  # # deploy-docker:
+  # #   runs-on: ubuntu-latest
+  # #   needs:
+  # #     - build-push-docker
+  # #   steps:
+  # #     - uses: appleboy/ssh-action@v1
+  # #       with:
+  # #         host: ${{ secrets.EC2_HOST }}
+  # #         username: ${{ secrets.EC2_USER }}
+  # #         key: ${{ secrets.EC2_PRIVATE_KEY }}
+  # #         script: |
+  # #           cd prod
+  # #           sudo docker compose -f docker-compose.prod.yml pull
+  # #           sudo docker compose -f docker-compose.prod.yml up -d
+
+  deploy-docker-on-recette:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'recette')
+    environment:
+      name: recette
+      url: http://ec2-23-22-102-8.compute-1.amazonaws.com/
+    needs:
+      - build-push-docker
+    steps:
+      - uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            cd cesizen/recette
+            sudo docker compose -f docker-compose.global.yml pull
+            sudo docker compose -f docker-compose.global.yml up -d
+  
+  # deploy-docker-on-test:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.ref_name == 'test' }}
+  #   environment:
+  #     name: test
+  #     url: http://ec2-23-22-102-8.compute-1.amazonaws.com/
+  #   needs:
+  #     - build-push-docker
+  #   steps:
+  #     - uses: appleboy/ssh-action@v1
+  #       with:
+  #         host: ${{ secrets.EC2_HOST }}
+  #         username: ${{ secrets.EC2_USER }}
+  #         key: ${{ secrets.EC2_PRIVATE_KEY }}
+  #         script: |
+  #           mkdir test -p
+  #           cd test
+  #           sudo docker compose -f docker-compose.test.yml pull
+  #           sudo docker compose -f docker-compose.test.yml up -d
+
+
+

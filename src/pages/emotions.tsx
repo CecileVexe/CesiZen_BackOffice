@@ -74,7 +74,6 @@ const Emotion = () => {
     },
   ];
 
-  // Récupération du rôle utilisateur et log si USER
   useEffect(() => {
     const fetchUserRole = async () => {
       if (user?.id) {

@@ -110,7 +110,6 @@ const Index = () => {
 
   const debouncedSearch = useDebounce(search, 500);
 
-  // Récupération du rôle utilisateur et log si USER
   useEffect(() => {
     const fetchUserRole = async () => {
       if (user?.id) {
@@ -169,6 +168,8 @@ const Index = () => {
   };
 
   const handleSubmitClick = (data: ArticleType) => {
+
+
     if (data.id) {
       const { ...rest } = data;
       updateArticle(data.id.toString(), {

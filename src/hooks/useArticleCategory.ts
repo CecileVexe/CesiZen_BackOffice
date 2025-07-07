@@ -4,6 +4,7 @@ import {
   ArticleCategoryAddType,
   ArticleCategoryType,
 } from "../types/articleCategory";
+import { useAuthFetch } from "../utils/authFetch";
 
 interface UseCategoriesReturn {
   articleCategories: ArticleCategoriesType;
@@ -22,6 +23,7 @@ interface UseCategoriesReturn {
 
 const useArticleCategory = (): UseCategoriesReturn => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
+  const authFetch = useAuthFetch();
   const [articleCategories, setCategories] = useState<ArticleCategoriesType>({
     data: [],
     message: "",
@@ -30,7 +32,6 @@ const useArticleCategory = (): UseCategoriesReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Récupérer la liste des catégories
   const fetchArticleCategories = async () => {
     setLoading(true);
     setError(null);
@@ -46,13 +47,12 @@ const useArticleCategory = (): UseCategoriesReturn => {
     }
   };
 
-  // Créer une nouvelle catégorie
   const createArticleCategory = async (
     newCategory: Omit<ArticleCategoryType, "id">
   ) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/article-category`, {
+      const res = await authFetch(`${baseUrl}/article-category`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCategory),
@@ -70,14 +70,13 @@ const useArticleCategory = (): UseCategoriesReturn => {
     }
   };
 
-  // Mettre à jour une catégorie
   const updateArticleCategory = async (
     id: string,
     updatedFields: Partial<ArticleCategoryType>
   ) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/article-category/${id}`, {
+      const res = await authFetch(`${baseUrl}/article-category/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedFields),
@@ -97,11 +96,10 @@ const useArticleCategory = (): UseCategoriesReturn => {
     }
   };
 
-  // Supprimer une catégorie
   const deleteArticleCategory = async (id: string) => {
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/article-category/${id}`, {
+      const res = await authFetch(`${baseUrl}/article-category/${id}`, {
         method: "DELETE",
       });
       if (!res.ok)

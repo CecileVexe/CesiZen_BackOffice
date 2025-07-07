@@ -196,6 +196,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
     Object.keys({ ...dirtyFields }).forEach((key) => {
       payload[key] = data[key];
     });
+
     if (onSubmit) {
       onSubmit(payload);
     }
@@ -214,7 +215,7 @@ const GenericModal: React.FC<GenericModalProps> = ({
     }
   }, [open]);
 
-  console.log(selectedImage);
+
 
   return (
     <Dialog

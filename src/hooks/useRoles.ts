@@ -1,4 +1,3 @@
-// src/hooks/useRoles.ts
 import { useState } from "react";
 import { RoleType, RoleAddType, RolesType } from "../types/role";
 
@@ -21,7 +20,6 @@ const useRoles = (): UseRolesReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Récupérer la liste des citoyens
   const fetchRoles = async () => {
     setLoading(true);
     setError(null);
@@ -37,7 +35,6 @@ const useRoles = (): UseRolesReturn => {
     }
   };
 
-  // Créer un nouveau citoyen
   const createRole = async (newRole: Omit<RoleType, "id">) => {
     setError(null);
     try {
@@ -58,7 +55,6 @@ const useRoles = (): UseRolesReturn => {
     }
   };
 
-  // Mettre à jour un citoyen
   const updateRole = async (id: string, updatedFields: Partial<RoleType>) => {
     setError(null);
     try {
@@ -81,7 +77,6 @@ const useRoles = (): UseRolesReturn => {
     }
   };
 
-  // Supprimer un citoyen
   const deleteRole = async (id: string) => {
     setError(null);
     try {

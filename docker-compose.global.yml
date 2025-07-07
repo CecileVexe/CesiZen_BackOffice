@@ -1,0 +1,44 @@
+services:
+  backoffice:
+    build: .
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3001:3000
+
+  database:
+    image: mariadb:11.8.2  
+    environment:
+      MARIADB_DATABASE: ${ENV_DATABASE}  
+      MARIADB_USER: ${ENV_USER}   
+      MARIADB_PASSWORD: ${ENV_PASSWORD}  
+      MARIADB_RANDOM_ROOT_PASSWORD: 1  
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - ./docker/mariadb/data:/var/lib/mysql
+  
+  admin:
+    image: adminer
+    restart: always
+    depends_on: 
+      - database
+    ports:
+      - 8080:8080
+
+  # Backend service
+  backend:
+    build: ../../CesiZen_Back/. 
+    ports:
+      - "3000:3000"  
+    depends_on:
+      database:
+        condition: service_healthy  
+    env_file:
+      - ../../CesiZen_Back/.env.prod  

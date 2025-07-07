@@ -70,7 +70,7 @@ const Header = () => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
+              <MenuItem onClick={handleLogout}>Déconnexion...</MenuItem>
             </Menu>
           </>
         )}

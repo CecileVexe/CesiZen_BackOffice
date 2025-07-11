@@ -29,7 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.ref, 'recette')"
     needs:
-      - test
       - lint
       - audit
     steps:

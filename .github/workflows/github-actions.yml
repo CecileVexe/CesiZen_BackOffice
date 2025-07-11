@@ -14,7 +14,7 @@ jobs:
       - run: echo "Lancement du lint"
       - run: npm run lint
   
-   audit:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code

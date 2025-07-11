@@ -11,13 +11,27 @@ jobs:
         uses: actions/checkout@v4
       - run: echo "Le code du dépôt a été cloné sur le serveur d'exécution."
       - run: npm clean-install
-      - run: echo "Lancement de la verification du lint"
+      - run: echo "Lancement du lint"
       - run: npm run lint
+  
+   audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "Le code du dépôt a été cloné sur le serveur d'exécution."
+      - run: npm clean-install
+      - run: echo "Lancement de l'audit"
+      - run: npm audit
+
 
   build:
     runs-on: ubuntu-latest
+    if: "!contains(github.ref, 'recette')"
     needs:
+      - test
       - lint
+      - audit
     steps:
       - run: echo "Lancement des étapes de construction"
       - name: Check out repository code

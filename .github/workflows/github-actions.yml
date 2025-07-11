@@ -52,6 +52,7 @@ jobs:
     if: contains(github.ref, 'recette')
     needs:
       - lint
+      - audit
     permissions:
       contents: read
       packages: write

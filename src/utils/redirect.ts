@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useAuthRedirect = (p0: (roleName: any) => void) => {
+export const useAuthRedirect = (_p0: (roleName: any) => void) => {
   const { isSignedIn, isLoaded } = useUser();
 
   useEffect(() => {

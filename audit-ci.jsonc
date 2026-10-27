@@ -1,0 +1,9 @@
+{
+  // Contrôle des dépendances npm lancé par la CI (job security-audit).
+  // La CI échoue dès qu'une faille de gravité haute ou critique est trouvée.
+  "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
+  "high": true,
+  "report-type": "important",
+  // Exceptions : identifiants GHSA acceptés temporairement, chacun avec sa justification.
+  "allowlist": []
+}
